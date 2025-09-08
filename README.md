@@ -1,4 +1,5 @@
 # WeatherEase 🌤️
+**Group Name:** ClearPath
 
 **Tagline:** Easy breezy forecasts.  
 **Mission:** To ensure everyone, rain or shine, can access the forecast with ease.  
