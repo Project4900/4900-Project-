@@ -161,3 +161,17 @@ footer a {
 footer a:hover {
   text-decoration: underline;
 }
+
+
+/* Dark mode styles */
+body {
+    background-color: #e0f7fa;
+    color: #00796b;
+    font-family: Arial, sans-serif;
+    transition: background 0.3s, color 0.3s;
+}
+
+body.dark-mode {
+    background-color: #0f172a;
+    color: #f8fafc;
+}
