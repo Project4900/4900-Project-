@@ -1,9 +1,9 @@
 :root {
   --max-w: 1100px;
-  --brand: #03a9f4;       /* Light blue header/buttons */
-  --brand-dark: #0288d1;  /* Darker blue hover */
-  --light-bg: #e0f7fa;    /* Light blue card background */
-  --card-border: #b2ebf2; /* Subtle border */
+  --brand: #03a9f4;
+  --brand-dark: #0288d1;
+  --light-bg: #e0f7fa;
+  --card-border: #b2ebf2;
 }
 
 * {
@@ -54,7 +54,8 @@ nav a {
   padding: .5rem .75rem;
   border-radius: .5rem;
 }
-nav a:hover, nav a:focus {
+nav a:hover,
+nav a:focus {
   background: rgba(255,255,255,.15);
 }
 
@@ -161,11 +162,12 @@ footer a:hover {
   text-decoration: underline;
 }
 
-/* Dark mode */
+/* Dark mode styles */
 body.dark-mode {
   background-color: #0f172a;
   color: #f8fafc;
 }
+
 
 
 
