@@ -32,16 +32,17 @@
           <li><a href="#current">Current</a></li>
           <li><a href="#forecast">Forecast</a></li>
           <li><a href="#alerts">Alerts</a></li>
-          <li><a href="Settings.html">Settings</a></li>
+          <li><a href="#settings">Settings</a></li>
         </ul>
       </nav>
     </div>
   </header>
 
   <main id="content" role="main">
+    <!-- Current conditions -->
     <section id="current" aria-labelledby="current-heading">
       <h2 id="current-heading">Current Conditions</h2>
-      <form id="location-form" aria-label="Choose location" style="display:flex; gap:.5rem; align-items: end; flex-wrap: wrap;">
+      <form id="location-form" aria-label="Choose location">
         <div>
           <label for="search">City or ZIP</label>
           <input id="search" name="search" type="search" placeholder="e.g., Brooklyn, NY or 11210" aria-describedby="search-help" />
@@ -63,19 +64,21 @@
       <div aria-live="polite" aria-atomic="true" id="current-status" style="opacity:.8;">Ready.</div>
     </section>
 
+    <!-- Forecast -->
     <section id="forecast" aria-labelledby="forecast-heading">
       <h2 id="forecast-heading">7‑Day Forecast</h2>
       <ul id="forecast-list" aria-label="Daily forecast">
-        <li class="day" aria-label="Day 1"><strong data-day>—</strong><br><span data-high>—</span> / <span data-low>—</span><br><span data-desc>—</span></li>
-        <li class="day" aria-label="Day 2"><strong data-day>—</strong><br><span data-high>—</span> / <span data-low>—</span><br><span data-desc>—</span></li>
-        <li class="day" aria-label="Day 3"><strong data-day>—</strong><br><span data-high>—</span> / <span data-low>—</span><br><span data-desc>—</span></li>
-        <li class="day" aria-label="Day 4"><strong data-day>—</strong><br><span data-high>—</span> / <span data-low>—</span><br><span data-desc>—</span></li>
-        <li class="day" aria-label="Day 5"><strong data-day>—</strong><br><span data-high>—</span> / <span data-low>—</span><br><span data-desc>—</span></li>
-        <li class="day" aria-label="Day 6"><strong data-day>—</strong><br><span data-high>—</span> / <span data-low>—</span><br><span data-desc>—</span></li>
-        <li class="day" aria-label="Day 7"><strong data-day>—</strong><br><span data-high>—</span> / <span data-low>—</span><br><span data-desc>—</span></li>
+        <li class="day"><strong data-day>—</strong><br><span data-high>—</span> / <span data-low>—</span><br><span data-desc>—</span></li>
+        <li class="day"><strong data-day>—</strong><br><span data-high>—</span> / <span data-low>—</span><br><span data-desc>—</span></li>
+        <li class="day"><strong data-day>—</strong><br><span data-high>—</span> / <span data-low>—</span><br><span data-desc>—</span></li>
+        <li class="day"><strong data-day>—</strong><br><span data-high>—</span> / <span data-low>—</span><br><span data-desc>—</span></li>
+        <li class="day"><strong data-day>—</strong><br><span data-high>—</span> / <span data-low>—</span><br><span data-desc>—</span></li>
+        <li class="day"><strong data-day>—</strong><br><span data-high>—</span> / <span data-low>—</span><br><span data-desc>—</span></li>
+        <li class="day"><strong data-day>—</strong><br><span data-high>—</span> / <span data-low>—</span><br><span data-desc>—</span></li>
       </ul>
     </section>
 
+    <!-- Alerts -->
     <aside id="alerts" aria-labelledby="alerts-heading">
       <h2 id="alerts-heading">Alerts & Tips</h2>
       <div role="status" aria-live="polite" id="alerts-live">No active alerts.</div>
@@ -86,12 +89,14 @@
       </ul>
     </aside>
 
+    <!-- Settings -->
     <article id="settings" aria-labelledby="settings-heading">
       <h2 id="settings-heading">Settings & Accessibility</h2>
-      <form aria-label="Accessibility settings" style="display:grid; gap:.75rem; max-width: 600px;">
+      <form aria-label="Accessibility settings">
         <label><input type="checkbox" id="big-text" /> Use larger text</label>
         <label><input type="checkbox" id="high-contrast" /> High contrast</label>
         <label><input type="checkbox" id="voice" /> Enable voice commands</label>
+        <label><input type="checkbox" id="dark-mode" /> Dark Mode</label>
         <label for="units">Units</label>
         <select id="units" name="units">
           <option value="auto">Auto (by location)</option>
@@ -115,8 +120,12 @@
     </div>
   </footer>
 
+  <!-- Script -->
+  <script src="script.js"></script>
   <script>
     document.getElementById('year').textContent = new Date().getFullYear();
+
+    // Current & Forecast demo (replace with API fetch later)
     (function(){
       const big = document.getElementById('big-text');
       const contrast = document.getElementById('high-contrast');
@@ -159,4 +168,5 @@
   </script>
 </body>
 </html>
+
 
