@@ -1,9 +1,9 @@
 :root {
   --max-w: 1100px;
-  --brand: #00796b;
-  --brand-dark: #004d40;
-  --light-bg: #f8fafc;
-  --card-border: #e2e8f0;
+  --brand: #03a9f4;       /* light blue for header/buttons */
+  --brand-dark: #0288d1;  /* darker blue for hover effects */
+  --light-bg: #e0f7fa;    /* light blue background for cards */
+  --card-border: #b2ebf2; /* subtle border matching the theme */
 }
 
 * {
@@ -15,8 +15,9 @@
 body {
   font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
   line-height: 1.6;
-  color: #1e293b;
-  background: #e0f7fa;
+  color: #01579b;          /* text color: deep blue */
+  background: var(--light-bg);
+  transition: background 0.3s, color 0.3s;
 }
 
 /* Header */
@@ -52,7 +53,6 @@ nav a {
   text-decoration: none;
   padding: .5rem .75rem;
   border-radius: .5rem;
-  
 }
 nav a:hover,
 nav a:focus {
@@ -74,7 +74,7 @@ main {
 }
 
 section, article, aside {
-  background: var(--light-bg);
+  background: #ffffff;
   border: 1px solid var(--card-border);
   border-radius: .75rem;
   padding: 1.25rem;
@@ -162,16 +162,8 @@ footer a:hover {
   text-decoration: underline;
 }
 
-
-/* Dark mode styles */
-body {
-    background-color: #e0f7fa;
-    color: #00796b;
-    font-family: Arial, sans-serif;
-    transition: background 0.3s, color 0.3s;
-}
-
+/* Dark mode support */
 body.dark-mode {
-    background-color: #0f172a;
-    color: #f8fafc;
+  background-color: #0f172a;
+  color: #f8fafc;
 }

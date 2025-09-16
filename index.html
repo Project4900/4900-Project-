@@ -1,41 +1,16 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>WeatherEase — Accessible Weather App</title>
 
   <!-- Styles -->
-  <style>
-    :root { --max-w: 1100px; }
-    * { box-sizing: border-box; }
-    body { margin: 0; font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif; line-height: 1.6; }
-    a { color: inherit; }
-    img { max-width: 100%; height: auto; }
-
-    header { background: #0f172a; color: #fff; }
-    header .wrap { display: flex; align-items: center; justify-content: space-between; gap: 1rem; padding: 1rem; margin: 0 auto; max-width: var(--max-w); }
-    nav ul { list-style: none; display: flex; gap: 1rem; padding: 0; margin: 0; }
-    nav a { text-decoration: none; padding: .5rem .75rem; border-radius: .5rem; }
-    nav a:focus, nav a:hover { background: rgba(255,255,255,.12); }
-
-    .skip-link { position: absolute; left: -999px; top: auto; width: 1px; height: 1px; overflow: hidden; }
-    .skip-link:focus { position: static; width: auto; height: auto; padding: .5rem .75rem; background: #fde68a; color: #000; }
-
-    main { margin: 0 auto; max-width: var(--max-w); padding: 1.25rem; display: grid; gap: 1.25rem; grid-template-columns: 1fr; }
-    @media (min-width: 900px) { main { grid-template-columns: 2fr 1fr; } }
-
-    section, article, aside { background: #f8fafc; border: 1px solid #e2e8f0; border-radius: .75rem; padding: 1rem; }
-    section > h2, article > h2, aside > h2 { margin-top: 0; }
-
-    footer { background: #0b1020; color: #cbd5e1; margin-top: 1rem; }
-    footer .wrap { max-width: var(--max-w); margin: 0 auto; padding: 1rem; display: grid; gap: .75rem; }
-    small { display: block; }
-  </style>
+  <link rel="stylesheet" href="styles.css">
 
   <!-- PWA Manifest -->
   <link rel="manifest" href="manifest.json?v=3">
-  <meta name="theme-color" content="#00796b"/>
+  <meta name="theme-color" content="#03a9f4"/>
 
   <!-- iOS Support -->
   <link rel="apple-touch-icon" href="icons/weather-180.png">
@@ -50,7 +25,7 @@
     <div class="wrap">
       <div>
         <h1 style="margin:0; font-size:1.25rem;">WeatherEase</h1>
-        <p style="margin:.25rem 0 0; opacity:.8;">Accessible, simple weather for everyone</p>
+        <p style="margin:.25rem 0 0; opacity:.85;">Accessible, simple weather for everyone</p>
       </div>
       <nav aria-label="Primary">
         <ul>
@@ -90,7 +65,7 @@
 
     <section id="forecast" aria-labelledby="forecast-heading">
       <h2 id="forecast-heading">7‑Day Forecast</h2>
-      <ul id="forecast-list" aria-label="Daily forecast" style="display:grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: .75rem; list-style:none; padding:0; margin:0;">
+      <ul id="forecast-list" aria-label="Daily forecast">
         <li class="day" aria-label="Day 1"><strong data-day>—</strong><br><span data-high>—</span> / <span data-low>—</span><br><span data-desc>—</span></li>
         <li class="day" aria-label="Day 2"><strong data-day>—</strong><br><span data-high>—</span> / <span data-low>—</span><br><span data-desc>—</span></li>
         <li class="day" aria-label="Day 3"><strong data-day>—</strong><br><span data-high>—</span> / <span data-low>—</span><br><span data-desc>—</span></li>
@@ -130,4 +105,58 @@
   <footer role="contentinfo">
     <div class="wrap">
       <nav aria-label="Footer">
-        <ul style="list-style:none; display:flex; gap:1rem; padding:0;
+        <ul>
+          <li><a href="#accessibility">Accessibility Statement</a></li>
+          <li><a href="#data-sources">Data Sources</a></li>
+          <li><a href="#contact">Contact</a></li>
+        </ul>
+      </nav>
+      <small>&copy; <span id="year"></span> WeatherEase. Weather data powered by your chosen API.</small>
+    </div>
+  </footer>
+
+  <script>
+    document.getElementById('year').textContent = new Date().getFullYear();
+    (function(){
+      const big = document.getElementById('big-text');
+      const contrast = document.getElementById('high-contrast');
+      const voice = document.getElementById('voice');
+      const status = document.getElementById('current-status');
+
+      big?.addEventListener('change', () => {
+        document.documentElement.style.fontSize = big.checked ? '18px' : '';
+      });
+      contrast?.addEventListener('change', () => {
+        document.body.style.filter = contrast.checked ? 'contrast(1.2)' : '';
+      });
+      voice?.addEventListener('change', () => {
+        status.textContent = voice.checked ? 'Voice commands enabled (placeholder).' : 'Voice commands disabled.';
+      });
+
+      document.getElementById('geo-btn')?.addEventListener('click', () => {
+        status.textContent = 'Getting your location…';
+        if (!navigator.geolocation) {
+          status.textContent = 'Geolocation not supported by your browser.';
+          return;
+        }
+        navigator.geolocation.getCurrentPosition(
+          (pos) => {
+            const { latitude, longitude } = pos.coords;
+            document.querySelector('[data-field="place"]').textContent = `${latitude.toFixed(3)}, ${longitude.toFixed(3)}`;
+            status.textContent = 'Location received. Replace this with a real weather fetch.';
+          },
+          (err) => {
+            status.textContent = 'Unable to get location.';
+          }
+        );
+      });
+
+      document.getElementById('location-form')?.addEventListener('submit', (e) => {
+        e.preventDefault();
+        status.textContent = 'Searching… Replace this with an API request.';
+      });
+    })();
+  </script>
+</body>
+</html>
+
