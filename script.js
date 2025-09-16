@@ -1,9 +1,10 @@
 console.log("WeatherEase App loaded");
 
+const API_KEY = "2c1fb322de5c86e87d6eb7e265fe9f32";
+const PRO_ENDPOINT = "https://pro.openweathermap.org/data/2.5";
+
 // Set current year
 document.getElementById('year').textContent = new Date().getFullYear();
-
-const apiKey = "2c1fb322de5c86e87d6eb7e265fe9f32";
 
 document.addEventListener('DOMContentLoaded', () => {
   const darkModeCheckbox = document.getElementById('dark-mode');
@@ -11,10 +12,12 @@ document.addEventListener('DOMContentLoaded', () => {
     document.body.classList.add('dark-mode');
     if (darkModeCheckbox) darkModeCheckbox.checked = true;
   }
-  darkModeCheckbox?.addEventListener('change', () => {
-    document.body.classList.toggle('dark-mode', darkModeCheckbox.checked);
-    localStorage.setItem('darkMode', darkModeCheckbox.checked);
-  });
+  if (darkModeCheckbox) {
+    darkModeCheckbox.addEventListener('change', () => {
+      document.body.classList.toggle('dark-mode', darkModeCheckbox.checked);
+      localStorage.setItem('darkMode', darkModeCheckbox.checked);
+    });
+  }
 
   const big = document.getElementById('big-text');
   const contrast = document.getElementById('high-contrast');
@@ -33,62 +36,97 @@ document.addEventListener('DOMContentLoaded', () => {
       : 'Voice commands disabled.';
   });
 
-  // Fetch weather function
-  async function fetchWeather(query) {
+  // --- Helper: Fetch weather ---
+  async function fetchWeather(lat, lon, units = 'metric') {
     try {
-      status.textContent = "Fetching weather…";
-      const url = `https://api.openweathermap.org/data/2.5/forecast?q=${encodeURIComponent(query)}&appid=${apiKey}&units=imperial`;
-      const res = await fetch(url);
-      if (!res.ok) throw new Error("Location not found");
-      const data = await res.json();
+      status.textContent = 'Fetching weather data...';
 
-      // Current conditions (take first item)
-      const current = data.list[0];
-      document.querySelector('[data-field="place"]').textContent = `${data.city.name}, ${data.city.country}`;
-      document.querySelector('[data-field="temp"]').textContent = `${Math.round(current.main.temp)}°F`;
-      document.querySelector('[data-field="feels"]').textContent = `${Math.round(current.main.feels_like)}°F`;
-      document.querySelector('[data-field="desc"]').textContent = current.weather[0].description;
-      document.querySelector('[data-field="humidity"]').textContent = `${current.main.humidity}%`;
-      document.querySelector('[data-field="wind"]').textContent = `${current.wind.speed} mph`;
+      // Current weather
+      const currentResp = await fetch(`${PRO_ENDPOINT}/weather?lat=${lat}&lon=${lon}&units=${units}&appid=${API_KEY}`);
+      if (!currentResp.ok) throw new Error("Current weather request failed");
+      const currentData = await currentResp.json();
 
-      // 5-day forecast
+      document.querySelector('[data-field="place"]').textContent = `${currentData.name}, ${currentData.sys.country}`;
+      document.querySelector('[data-field="temp"]').textContent = `${Math.round(currentData.main.temp)}°`;
+      document.querySelector('[data-field="feels"]').textContent = `${Math.round(currentData.main.feels_like)}°`;
+      document.querySelector('[data-field="desc"]').textContent = currentData.weather[0].description;
+      document.querySelector('[data-field="humidity"]').textContent = `${currentData.main.humidity}%`;
+      document.querySelector('[data-field="wind"]').textContent = `${currentData.wind.speed} ${units === 'metric' ? 'm/s' : 'mph'}`;
+
+      // Daily forecast (5 days using 3-hour API -> we pick 1 per day)
+      const forecastResp = await fetch(`${PRO_ENDPOINT}/forecast?lat=${lat}&lon=${lon}&units=${units}&appid=${API_KEY}`);
+      if (!forecastResp.ok) throw new Error("Forecast request failed");
+      const forecastData = await forecastResp.json();
+
       const days = document.querySelectorAll('#forecast-list li');
       for (let i = 0; i < days.length; i++) {
-        const dayData = data.list[i*8]; // approx 24h intervals
-        if (!dayData) continue;
-        const date = new Date(dayData.dt_txt);
-        days[i].querySelector('[data-day]').textContent = date.toLocaleDateString(undefined, { weekday: 'short' });
-        days[i].querySelector('[data-high]').textContent = `${Math.round(dayData.main.temp_max)}°F`;
-        days[i].querySelector('[data-low]').textContent = `${Math.round(dayData.main.temp_min)}°F`;
-        days[i].querySelector('[data-desc]').textContent = dayData.weather[0].main;
+        const item = days[i];
+        const daily = forecastData.list[i*8]; // approx every 24 hours (3h * 8 = 24h)
+        if (!daily) break;
+        const date = new Date(daily.dt * 1000);
+        const dayName = date.toLocaleDateString(undefined, { weekday: 'short' });
+        item.querySelector('[data-day]').textContent = dayName;
+        item.querySelector('[data-high]').textContent = `${Math.round(daily.main.temp_max)}°`;
+        item.querySelector('[data-low]').textContent = `${Math.round(daily.main.temp_min)}°`;
+        item.querySelector('[data-desc]').textContent = daily.weather[0].description;
       }
 
-      status.textContent = "Weather updated.";
+      status.textContent = 'Weather updated successfully.';
     } catch (err) {
       console.error(err);
-      status.textContent = "Error fetching location. Check spelling.";
+      status.textContent = 'Error fetching location. Check spelling or try again.';
+      document.querySelector('[data-field="place"]').textContent = '—';
+      document.querySelector('[data-field="temp"]').textContent = '—';
+      document.querySelector('[data-field="feels"]').textContent = '—';
+      document.querySelector('[data-field="desc"]').textContent = '—';
+      document.querySelector('[data-field="humidity"]').textContent = '—';
+      document.querySelector('[data-field="wind"]').textContent = '—';
+      document.querySelectorAll('#forecast-list li').forEach(li => {
+        li.querySelector('[data-day]').textContent = '—';
+        li.querySelector('[data-high]').textContent = '—';
+        li.querySelector('[data-low]').textContent = '—';
+        li.querySelector('[data-desc]').textContent = '—';
+      });
     }
   }
 
-  // Search form
-  document.getElementById('location-form')?.addEventListener('submit', (e) => {
-    e.preventDefault();
-    const searchVal = document.getElementById('search').value.trim();
-    if (searchVal) fetchWeather(searchVal);
-  });
-
-  // Geolocation button
+  // --- Geolocation ---
   document.getElementById('geo-btn')?.addEventListener('click', () => {
     if (!navigator.geolocation) {
       status.textContent = 'Geolocation not supported by your browser.';
       return;
     }
     navigator.geolocation.getCurrentPosition(
-      (pos) => {
-        const { latitude, longitude } = pos.coords;
-        fetchWeather(`${latitude},${longitude}`);
-      },
-      () => status.textContent = 'Unable to get location.'
+      pos => fetchWeather(pos.coords.latitude, pos.coords.longitude, getUnits()),
+      err => status.textContent = 'Unable to get location.'
     );
   });
+
+  // --- Form Search ---
+  document.getElementById('location-form')?.addEventListener('submit', async e => {
+    e.preventDefault();
+    const searchVal = document.getElementById('search').value.trim();
+    if (!searchVal) return;
+
+    try {
+      status.textContent = 'Geocoding location...';
+      // Geocoding API to get lat/lon
+      const geoResp = await fetch(`https://api.openweathermap.org/geo/1.0/direct?q=${encodeURIComponent(searchVal)}&limit=1&appid=${API_KEY}`);
+      if (!geoResp.ok) throw new Error('Geocoding failed');
+      const geoData = await geoResp.json();
+      if (!geoData[0]) throw new Error('Location not found');
+
+      const { lat, lon } = geoData[0];
+      fetchWeather(lat, lon, getUnits());
+    } catch (err) {
+      console.error(err);
+      status.textContent = 'Error fetching location. Check spelling.';
+    }
+  });
+
+  function getUnits() {
+    const unitsSelect = document.getElementById('units');
+    const val = unitsSelect?.value || 'metric';
+    return val === 'auto' ? 'metric' : val;
+  }
 });
