@@ -1,16 +1,16 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>WeatherEase — Accessible Weather App</title>
 
   <!-- Styles -->
-  <link rel="stylesheet" href="styles.css">
+  <link rel="stylesheet" href="style.css">
 
   <!-- PWA Manifest -->
   <link rel="manifest" href="manifest.json?v=3">
-  <meta name="theme-color" content="#03a9f4"/>
+  <meta name="theme-color" content="#00796b"/>
 
   <!-- iOS Support -->
   <link rel="apple-touch-icon" href="icons/weather-180.png">
@@ -25,7 +25,7 @@
     <div class="wrap">
       <div>
         <h1 style="margin:0; font-size:1.25rem;">WeatherEase</h1>
-        <p style="margin:.25rem 0 0; opacity:.85;">Accessible, simple weather for everyone</p>
+        <p style="margin:.25rem 0 0; opacity:.8;">Accessible, simple weather for everyone</p>
       </div>
       <nav aria-label="Primary">
         <ul>
@@ -42,7 +42,7 @@
     <!-- Current conditions -->
     <section id="current" aria-labelledby="current-heading">
       <h2 id="current-heading">Current Conditions</h2>
-      <form id="location-form" aria-label="Choose location" class="location-form">
+      <form id="location-form" aria-label="Choose location" style="display:flex; gap:.5rem; align-items: end; flex-wrap: wrap;">
         <div>
           <label for="search">City or ZIP</label>
           <input id="search" name="search" type="search" placeholder="e.g., Brooklyn, NY or 11210" aria-describedby="search-help" />
@@ -67,14 +67,14 @@
     <!-- Forecast -->
     <section id="forecast" aria-labelledby="forecast-heading">
       <h2 id="forecast-heading">7‑Day Forecast</h2>
-      <ul id="forecast-list" aria-label="Daily forecast">
-        <li class="day" aria-label="Day 1"><strong data-day>Day 1</strong><br><span data-high>—</span> / <span data-low>—</span><br><span data-desc>—</span></li>
-        <li class="day" aria-label="Day 2"><strong data-day>Day 2</strong><br><span data-high>—</span> / <span data-low>—</span><br><span data-desc>—</span></li>
-        <li class="day" aria-label="Day 3"><strong data-day>Day 3</strong><br><span data-high>—</span> / <span data-low>—</span><br><span data-desc>—</span></li>
-        <li class="day" aria-label="Day 4"><strong data-day>Day 4</strong><br><span data-high>—</span> / <span data-low>—</span><br><span data-desc>—</span></li>
-        <li class="day" aria-label="Day 5"><strong data-day>Day 5</strong><br><span data-high>—</span> / <span data-low>—</span><br><span data-desc>—</span></li>
-        <li class="day" aria-label="Day 6"><strong data-day>Day 6</strong><br><span data-high>—</span> / <span data-low>—</span><br><span data-desc>—</span></li>
-        <li class="day" aria-label="Day 7"><strong data-day>Day 7</strong><br><span data-high>—</span> / <span data-low>—</span><br><span data-desc>—</span></li>
+      <ul id="forecast-list" aria-label="Daily forecast" style="display:grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: .75rem; list-style:none; padding:0; margin:0;">
+        <li class="day" aria-label="Day 1"><strong data-day>—</strong><br><span data-high>—</span> / <span data-low>—</span><br><span data-desc>—</span></li>
+        <li class="day" aria-label="Day 2"><strong data-day>—</strong><br><span data-high>—</span> / <span data-low>—</span><br><span data-desc>—</span></li>
+        <li class="day" aria-label="Day 3"><strong data-day>—</strong><br><span data-high>—</span> / <span data-low>—</span><br><span data-desc>—</span></li>
+        <li class="day" aria-label="Day 4"><strong data-day>—</strong><br><span data-high>—</span> / <span data-low>—</span><br><span data-desc>—</span></li>
+        <li class="day" aria-label="Day 5"><strong data-day>—</strong><br><span data-high>—</span> / <span data-low>—</span><br><span data-desc>—</span></li>
+        <li class="day" aria-label="Day 6"><strong data-day>—</strong><br><span data-high>—</span> / <span data-low>—</span><br><span data-desc>—</span></li>
+        <li class="day" aria-label="Day 7"><strong data-day>—</strong><br><span data-high>—</span> / <span data-low>—</span><br><span data-desc>—</span></li>
       </ul>
     </section>
 
@@ -92,7 +92,8 @@
     <!-- Settings / Accessibility -->
     <article id="settings" aria-labelledby="settings-heading">
       <h2 id="settings-heading">Settings & Accessibility</h2>
-      <form aria-label="Accessibility settings">
+      <form aria-label="Accessibility settings" style="display:grid; gap:.75rem; max-width: 600px;">
+        <label><input type="checkbox" id="dark-mode" /> Dark mode</label>
         <label><input type="checkbox" id="big-text" /> Use larger text</label>
         <label><input type="checkbox" id="high-contrast" /> High contrast</label>
         <label><input type="checkbox" id="voice" /> Enable voice commands</label>
@@ -109,7 +110,7 @@
   <footer role="contentinfo">
     <div class="wrap">
       <nav aria-label="Footer">
-        <ul>
+        <ul style="list-style:none; display:flex; gap:1rem; padding:0; margin:0; flex-wrap: wrap;">
           <li><a href="#accessibility">Accessibility Statement</a></li>
           <li><a href="#data-sources">Data Sources</a></li>
           <li><a href="#contact">Contact</a></li>
@@ -119,9 +120,12 @@
     </div>
   </footer>
 
+  <!-- Scripts -->
   <script src="script.js"></script>
 </body>
 </html>
+
+
 
 
 

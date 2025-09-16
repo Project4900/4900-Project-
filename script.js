@@ -4,7 +4,7 @@ console.log("WeatherEase App loaded");
 document.getElementById('year').textContent = new Date().getFullYear();
 
 document.addEventListener('DOMContentLoaded', () => {
-  // Dark mode toggle
+  // Dark mode toggle (make sure you add <input type="checkbox" id="dark-mode"> in HTML)
   const darkModeCheckbox = document.getElementById('dark-mode');
   if (localStorage.getItem('darkMode') === 'true') {
     document.body.classList.add('dark-mode');
@@ -60,10 +60,34 @@ document.addEventListener('DOMContentLoaded', () => {
   // Search form
   document.getElementById('location-form')?.addEventListener('submit', (e) => {
     e.preventDefault();
-    status.textContent = 'Searching… Replace this with an API request.';
     const searchVal = document.getElementById('search').value.trim();
     if (searchVal) {
       document.querySelector('[data-field="place"]').textContent = searchVal;
     }
+    // Fill current conditions with placeholder data
+    document.querySelector('[data-field="temp"]').textContent = '72°F';
+    document.querySelector('[data-field="feels"]').textContent = '75°F';
+    document.querySelector('[data-field="desc"]').textContent = 'Partly cloudy';
+    document.querySelector('[data-field="humidity"]').textContent = '50%';
+    document.querySelector('[data-field="wind"]').textContent = '5 mph';
+    status.textContent = 'Displaying placeholder weather data.';
+    
+    // Fill 7-day forecast placeholders
+    const days = document.querySelectorAll('#forecast-list li');
+    const dummyForecast = [
+      {day:'Mon', high:'75°F', low:'60°F', desc:'Sunny'},
+      {day:'Tue', high:'78°F', low:'62°F', desc:'Partly Cloudy'},
+      {day:'Wed', high:'80°F', low:'65°F', desc:'Sunny'},
+      {day:'Thu', high:'77°F', low:'63°F', desc:'Rain'},
+      {day:'Fri', high:'74°F', low:'61°F', desc:'Cloudy'},
+      {day:'Sat', high:'76°F', low:'62°F', desc:'Sunny'},
+      {day:'Sun', high:'79°F', low:'64°F', desc:'Thunderstorms'},
+    ];
+    days.forEach((li, i) => {
+      li.querySelector('[data-day]').textContent = dummyForecast[i].day;
+      li.querySelector('[data-high]').textContent = dummyForecast[i].high;
+      li.querySelector('[data-low]').textContent = dummyForecast[i].low;
+      li.querySelector('[data-desc]').textContent = dummyForecast[i].desc;
+    });
   });
-})();
+});
