@@ -1,10 +1,12 @@
 console.log("WeatherEase App loaded");
 
+const API_KEY = "2c1fb322de5c86e87d6eb7e265fe9f32";
+const PRO_ENDPOINT = "https://pro.openweathermap.org/data/2.5";
+
 // Set current year
 document.getElementById('year').textContent = new Date().getFullYear();
 
 document.addEventListener('DOMContentLoaded', () => {
-  // Dark mode toggle (make sure you add <input type="checkbox" id="dark-mode"> in HTML)
   const darkModeCheckbox = document.getElementById('dark-mode');
   if (localStorage.getItem('darkMode') === 'true') {
     document.body.classList.add('dark-mode');
@@ -17,7 +19,6 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  // Accessibility toggles
   const big = document.getElementById('big-text');
   const contrast = document.getElementById('high-contrast');
   const voice = document.getElementById('voice');
@@ -26,68 +27,106 @@ document.addEventListener('DOMContentLoaded', () => {
   big?.addEventListener('change', () => {
     document.documentElement.style.fontSize = big.checked ? '18px' : '';
   });
-
   contrast?.addEventListener('change', () => {
     document.body.style.filter = contrast.checked ? 'contrast(1.2)' : '';
   });
-
   voice?.addEventListener('change', () => {
     status.textContent = voice.checked
       ? 'Voice commands enabled (placeholder).'
       : 'Voice commands disabled.';
   });
 
-  // Geolocation button
+  // --- Helper: Fetch weather ---
+  async function fetchWeather(lat, lon, units = 'metric') {
+    try {
+      status.textContent = 'Fetching weather data...';
+
+      // Current weather
+      const currentResp = await fetch(`${PRO_ENDPOINT}/weather?lat=${lat}&lon=${lon}&units=${units}&appid=${API_KEY}`);
+      if (!currentResp.ok) throw new Error("Current weather request failed");
+      const currentData = await currentResp.json();
+
+      document.querySelector('[data-field="place"]').textContent = `${currentData.name}, ${currentData.sys.country}`;
+      document.querySelector('[data-field="temp"]').textContent = `${Math.round(currentData.main.temp)}°`;
+      document.querySelector('[data-field="feels"]').textContent = `${Math.round(currentData.main.feels_like)}°`;
+      document.querySelector('[data-field="desc"]').textContent = currentData.weather[0].description;
+      document.querySelector('[data-field="humidity"]').textContent = `${currentData.main.humidity}%`;
+      document.querySelector('[data-field="wind"]').textContent = `${currentData.wind.speed} ${units === 'metric' ? 'm/s' : 'mph'}`;
+
+      // Daily forecast (5 days using 3-hour API -> we pick 1 per day)
+      const forecastResp = await fetch(`${PRO_ENDPOINT}/forecast?lat=${lat}&lon=${lon}&units=${units}&appid=${API_KEY}`);
+      if (!forecastResp.ok) throw new Error("Forecast request failed");
+      const forecastData = await forecastResp.json();
+
+      const days = document.querySelectorAll('#forecast-list li');
+      for (let i = 0; i < days.length; i++) {
+        const item = days[i];
+        const daily = forecastData.list[i*8]; // approx every 24 hours (3h * 8 = 24h)
+        if (!daily) break;
+        const date = new Date(daily.dt * 1000);
+        const dayName = date.toLocaleDateString(undefined, { weekday: 'short' });
+        item.querySelector('[data-day]').textContent = dayName;
+        item.querySelector('[data-high]').textContent = `${Math.round(daily.main.temp_max)}°`;
+        item.querySelector('[data-low]').textContent = `${Math.round(daily.main.temp_min)}°`;
+        item.querySelector('[data-desc]').textContent = daily.weather[0].description;
+      }
+
+      status.textContent = 'Weather updated successfully.';
+    } catch (err) {
+      console.error(err);
+      status.textContent = 'Error fetching location. Check spelling or try again.';
+      document.querySelector('[data-field="place"]').textContent = '—';
+      document.querySelector('[data-field="temp"]').textContent = '—';
+      document.querySelector('[data-field="feels"]').textContent = '—';
+      document.querySelector('[data-field="desc"]').textContent = '—';
+      document.querySelector('[data-field="humidity"]').textContent = '—';
+      document.querySelector('[data-field="wind"]').textContent = '—';
+      document.querySelectorAll('#forecast-list li').forEach(li => {
+        li.querySelector('[data-day]').textContent = '—';
+        li.querySelector('[data-high]').textContent = '—';
+        li.querySelector('[data-low]').textContent = '—';
+        li.querySelector('[data-desc]').textContent = '—';
+      });
+    }
+  }
+
+  // --- Geolocation ---
   document.getElementById('geo-btn')?.addEventListener('click', () => {
-    status.textContent = 'Getting your location…';
     if (!navigator.geolocation) {
       status.textContent = 'Geolocation not supported by your browser.';
       return;
     }
     navigator.geolocation.getCurrentPosition(
-      (pos) => {
-        const { latitude, longitude } = pos.coords;
-        document.querySelector('[data-field="place"]').textContent = 
-          `${latitude.toFixed(3)}, ${longitude.toFixed(3)}`;
-        status.textContent = 'Location received. Replace with real weather fetch.';
-      },
-      (err) => {
-        status.textContent = 'Unable to get location.';
-      }
+      pos => fetchWeather(pos.coords.latitude, pos.coords.longitude, getUnits()),
+      err => status.textContent = 'Unable to get location.'
     );
   });
 
-  // Search form
-  document.getElementById('location-form')?.addEventListener('submit', (e) => {
+  // --- Form Search ---
+  document.getElementById('location-form')?.addEventListener('submit', async e => {
     e.preventDefault();
     const searchVal = document.getElementById('search').value.trim();
-    if (searchVal) {
-      document.querySelector('[data-field="place"]').textContent = searchVal;
+    if (!searchVal) return;
+
+    try {
+      status.textContent = 'Geocoding location...';
+      // Geocoding API to get lat/lon
+      const geoResp = await fetch(`https://api.openweathermap.org/geo/1.0/direct?q=${encodeURIComponent(searchVal)}&limit=1&appid=${API_KEY}`);
+      if (!geoResp.ok) throw new Error('Geocoding failed');
+      const geoData = await geoResp.json();
+      if (!geoData[0]) throw new Error('Location not found');
+
+      const { lat, lon } = geoData[0];
+      fetchWeather(lat, lon, getUnits());
+    } catch (err) {
+      console.error(err);
+      status.textContent = 'Error fetching location. Check spelling.';
     }
-    // Fill current conditions with placeholder data
-    document.querySelector('[data-field="temp"]').textContent = '72°F';
-    document.querySelector('[data-field="feels"]').textContent = '75°F';
-    document.querySelector('[data-field="desc"]').textContent = 'Partly cloudy';
-    document.querySelector('[data-field="humidity"]').textContent = '50%';
-    document.querySelector('[data-field="wind"]').textContent = '5 mph';
-    status.textContent = 'Displaying placeholder weather data.';
-    
-    // Fill 7-day forecast placeholders
-    const days = document.querySelectorAll('#forecast-list li');
-    const dummyForecast = [
-      {day:'Mon', high:'75°F', low:'60°F', desc:'Sunny'},
-      {day:'Tue', high:'78°F', low:'62°F', desc:'Partly Cloudy'},
-      {day:'Wed', high:'80°F', low:'65°F', desc:'Sunny'},
-      {day:'Thu', high:'77°F', low:'63°F', desc:'Rain'},
-      {day:'Fri', high:'74°F', low:'61°F', desc:'Cloudy'},
-      {day:'Sat', high:'76°F', low:'62°F', desc:'Sunny'},
-      {day:'Sun', high:'79°F', low:'64°F', desc:'Thunderstorms'},
-    ];
-    days.forEach((li, i) => {
-      li.querySelector('[data-day]').textContent = dummyForecast[i].day;
-      li.querySelector('[data-high]').textContent = dummyForecast[i].high;
-      li.querySelector('[data-low]').textContent = dummyForecast[i].low;
-      li.querySelector('[data-desc]').textContent = dummyForecast[i].desc;
-    });
   });
+
+  function getUnits() {
+    const unitsSelect = document.getElementById('units');
+    const val = unitsSelect?.value || 'metric';
+    return val === 'auto' ? 'metric' : val;
+  }
 });

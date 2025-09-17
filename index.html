@@ -1,15 +1,15 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>WeatherEase — Accessible Weather App</title>
-
-  <!-- Styles -->
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>WeatherEase — Home</title>
   <link rel="stylesheet" href="style.css">
+  <meta name="theme-color" content="#00796b">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
   <!-- PWA Manifest -->
-  <link rel="manifest" href="manifest.json?v=3">
+  <link rel="manifest" href="manifest.json">
   <meta name="theme-color" content="#00796b"/>
 
   <!-- iOS Support -->
@@ -17,117 +17,31 @@
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-title" content="WeatherEase">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+
 </head>
 <body>
-  <a class="skip-link" href="#content">Skip to main content</a>
-
-  <header role="banner">
-    <div class="wrap">
-      <div>
-        <h1 style="margin:0; font-size:1.25rem;">WeatherEase</h1>
-        <p style="margin:.25rem 0 0; opacity:.8;">Accessible, simple weather for everyone</p>
-      </div>
-      <nav aria-label="Primary">
-        <ul>
-          <li><a href="#current">Current</a></li>
-          <li><a href="#forecast">Forecast</a></li>
-          <li><a href="#alerts">Alerts</a></li>
-          <li><a href="#settings">Settings</a></li>
-        </ul>
-      </nav>
+  <div class="home-container">
+    <h1>WeatherEase</h1>
+    <p>Quick access to your weather, settings, or exit the app.</p>
+    <div class="dashboard-buttons">
+      <a href="weather.html#current" class="home-button">
+        <i class="fas fa-cloud-sun"></i><br>Weather
+      </a>
+      <a href="weather.html#settings" class="home-button">
+        <i class="fas fa-cog"></i><br>Settings
+      </a>
+      <button onclick="exitApp()" class="home-button">
+        <i class="fas fa-sign-out-alt"></i><br>Exit App
+      </button>
     </div>
-  </header>
+  </div>
 
-  <main id="content" role="main">
-    <!-- Current conditions -->
-    <section id="current" aria-labelledby="current-heading">
-      <h2 id="current-heading">Current Conditions</h2>
-      <form id="location-form" aria-label="Choose location" style="display:flex; gap:.5rem; align-items: end; flex-wrap: wrap;">
-        <div>
-          <label for="search">City or ZIP</label>
-          <input id="search" name="search" type="search" placeholder="e.g., Brooklyn, NY or 11210" aria-describedby="search-help" />
-          <small id="search-help">Press Enter to fetch weather.</small>
-        </div>
-        <button type="button" id="geo-btn" aria-live="polite">Use my location</button>
-        <button type="submit">Search</button>
-      </form>
-
-      <div id="current-card" role="group" aria-label="Current conditions card">
-        <p><strong>Location:</strong> <span data-field="place">—</span></p>
-        <p><strong>Temperature:</strong> <span data-field="temp">—</span></p>
-        <p><strong>Feels like:</strong> <span data-field="feels">—</span></p>
-        <p><strong>Condition:</strong> <span data-field="desc">—</span></p>
-        <p><strong>Humidity:</strong> <span data-field="humidity">—</span></p>
-        <p><strong>Wind:</strong> <span data-field="wind">—</span></p>
-      </div>
-
-      <div aria-live="polite" aria-atomic="true" id="current-status" style="opacity:.8;">Ready.</div>
-    </section>
-
-    <!-- Forecast -->
-    <section id="forecast" aria-labelledby="forecast-heading">
-      <h2 id="forecast-heading">7‑Day Forecast</h2>
-      <ul id="forecast-list" aria-label="Daily forecast" style="display:grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: .75rem; list-style:none; padding:0; margin:0;">
-        <li class="day" aria-label="Day 1"><strong data-day>—</strong><br><span data-high>—</span> / <span data-low>—</span><br><span data-desc>—</span></li>
-        <li class="day" aria-label="Day 2"><strong data-day>—</strong><br><span data-high>—</span> / <span data-low>—</span><br><span data-desc>—</span></li>
-        <li class="day" aria-label="Day 3"><strong data-day>—</strong><br><span data-high>—</span> / <span data-low>—</span><br><span data-desc>—</span></li>
-        <li class="day" aria-label="Day 4"><strong data-day>—</strong><br><span data-high>—</span> / <span data-low>—</span><br><span data-desc>—</span></li>
-        <li class="day" aria-label="Day 5"><strong data-day>—</strong><br><span data-high>—</span> / <span data-low>—</span><br><span data-desc>—</span></li>
-        <li class="day" aria-label="Day 6"><strong data-day>—</strong><br><span data-high>—</span> / <span data-low>—</span><br><span data-desc>—</span></li>
-        <li class="day" aria-label="Day 7"><strong data-day>—</strong><br><span data-high>—</span> / <span data-low>—</span><br><span data-desc>—</span></li>
-      </ul>
-    </section>
-
-    <!-- Alerts / Tips -->
-    <aside id="alerts" aria-labelledby="alerts-heading">
-      <h2 id="alerts-heading">Alerts & Tips</h2>
-      <div role="status" aria-live="polite" id="alerts-live">No active alerts.</div>
-      <ul id="tips">
-        <li>Press <kbd>Tab</kbd> to move, <kbd>Enter</kbd> to activate controls.</li>
-        <li>Use high‑contrast mode in Settings if needed.</li>
-        <li>Enable voice commands to ask “What’s the weather now?”</li>
-      </ul>
-    </aside>
-
-    <!-- Settings / Accessibility -->
-    <article id="settings" aria-labelledby="settings-heading">
-      <h2 id="settings-heading">Settings & Accessibility</h2>
-      <form aria-label="Accessibility settings" style="display:grid; gap:.75rem; max-width: 600px;">
-        <label><input type="checkbox" id="dark-mode" /> Dark mode</label>
-        <label><input type="checkbox" id="big-text" /> Use larger text</label>
-        <label><input type="checkbox" id="high-contrast" /> High contrast</label>
-        <label><input type="checkbox" id="voice" /> Enable voice commands</label>
-        <label for="units">Units</label>
-        <select id="units" name="units">
-          <option value="auto">Auto (by location)</option>
-          <option value="metric">Metric (°C, m/s)</option>
-          <option value="imperial">Imperial (°F, mph)</option>
-        </select>
-      </form>
-    </article>
-  </main>
-
-  <footer role="contentinfo">
-    <div class="wrap">
-      <nav aria-label="Footer">
-        <ul style="list-style:none; display:flex; gap:1rem; padding:0; margin:0; flex-wrap: wrap;">
-          <li><a href="#accessibility">Accessibility Statement</a></li>
-          <li><a href="#data-sources">Data Sources</a></li>
-          <li><a href="#contact">Contact</a></li>
-        </ul>
-      </nav>
-      <small>&copy; <span id="year"></span> WeatherEase. Weather data powered by your chosen API.</small>
-    </div>
-  </footer>
-
-  <!-- Scripts -->
-  <script src="script.js"></script>
+  <script>
+    function exitApp() {
+      window.location.href = "exit.html";
+    }
+  </script>
 </body>
 </html>
-
-
-
-
-
 
 
