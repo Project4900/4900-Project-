@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>WeatherEase — Home</title>
+  <link rel="stylesheet" href="style.css">
+  <meta name="theme-color" content="#00796b">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+  <div class="home-container">
+    <h1>WeatherEase</h1>
+    <p>Quick access to your weather, settings, or exit the app.</p>
+    <div class="dashboard-buttons">
+      <a href="index.html#current" class="home-button">
+        <i class="fas fa-cloud-sun"></i><br>Weather
+      </a>
+      <a href="index.html#settings" class="home-button">
+        <i class="fas fa-cog"></i><br>Settings
+      </a>
+      <button onclick="exitApp()" class="home-button">
+        <i class="fas fa-sign-out-alt"></i><br>Exit App
+      </button>
+    </div>
+  </div>
+
+  <script>
+    function exitApp() {
+      window.location.href = "exit.html";
+    }
+  </script>
+</body>
+</html>
+
+
