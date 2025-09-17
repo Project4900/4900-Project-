@@ -1,7 +1,7 @@
 {
   "name": "WeatherEase",
   "short_name": "WeatherEase",
-  "start_url": "./home.html",
+  "start_url": "./index.html",
   "display": "standalone",
   "background_color": "#e0f7fa",
   "theme_color": "#00796b",
