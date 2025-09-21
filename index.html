@@ -1,38 +1,49 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>WeatherEase — Home</title>
-  <link rel="stylesheet" href="style.css">
-  <meta name="theme-color" content="#00796b">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="stylesheet" href="style.css" />
+  <meta name="theme-color" content="#00796b" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"/>
 
   <!-- PWA Manifest -->
-  <link rel="manifest" href="manifest.json">
-  <meta name="theme-color" content="#00796b"/>
+  <link rel="manifest" href="manifest.json" />
+  <meta name="theme-color" content="#00796b" />
 
   <!-- iOS Support -->
-  <link rel="apple-touch-icon" href="icons/weather-180.png">
-  <meta name="apple-mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-title" content="WeatherEase">
-  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-
+  <link rel="apple-touch-icon" href="icons/weather-180.png" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-title" content="WeatherEase" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
 </head>
 <body>
   <div class="home-container">
     <h1>WeatherEase</h1>
     <p>Quick access to your weather, settings, or exit the app.</p>
+
     <div class="dashboard-buttons">
       <a href="weather.html#current" class="home-button">
-        <i class="fas fa-cloud-sun"></i><br>Weather
+        <i class="fas fa-cloud-sun"></i><br/>Weather
       </a>
       <a href="weather.html#settings" class="home-button">
-        <i class="fas fa-cog"></i><br>Settings
+        <i class="fas fa-cog"></i><br/>Settings
       </a>
       <button onclick="exitApp()" class="home-button">
-        <i class="fas fa-sign-out-alt"></i><br>Exit App
+        <i class="fas fa-sign-out-alt"></i><br/>Exit App
       </button>
+
+      <!-- NEW: Get Temp quick-check -->
+      <button id="get-temp" class="home-button" aria-label="Get current temperature">
+        <i class="fas fa-thermometer-half"></i><br/>Get Temp
+      </button>
+    </div>
+
+    <!-- Live readout -->
+    <div id="quick-temp-readout" aria-live="polite"
+         style="text-align:center;margin-top:.75rem;font-weight:600;">
+      —
     </div>
   </div>
 
@@ -41,7 +52,8 @@
       window.location.href = "exit.html";
     }
   </script>
+
+  <!-- Load your app logic on the home page -->
+  <script src="script.js" defer></script>
 </body>
 </html>
-
-
