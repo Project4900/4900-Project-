@@ -15,13 +15,15 @@ function speak(text) {
 }
 
 // ----------------------------
-// Greeting message (Home page only)
+// Greeting message
 // ----------------------------
 function greetUser() {
   const greeting = `Hello, welcome to WeatherEase! Here are the following choices:
   Get Weather, go to Settings, Get Temp, and Exit.
   To get weather say 1, to go to settings say 2, to get temp say 3, to exit say 9.`;
-  speak(greeting);
+
+  const voiceCheckbox = document.getElementById('voice');
+  if (voiceCheckbox?.checked) speak(greeting);
 }
 
 // ----------------------------
@@ -43,7 +45,7 @@ function startVoiceRecognition() {
   recognition.start();
 
   recognition.onresult = (event) => {
-    const command = event.results[0][0].transcript.trim().toLowerCase();
+    const command = event.results[0][0].transcript.trim();
     console.log("Heard:", command);
     handleVoiceCommand(command);
   };
@@ -54,16 +56,18 @@ function startVoiceRecognition() {
   };
 
   recognition.onend = () => {
-    // Keep listening continuously
-    recognition.start();
+    // Keep listening continuously only if checkbox still checked
+    const voiceCheckbox = document.getElementById('voice');
+    if (voiceCheckbox?.checked) recognition.start();
   };
 }
 
 // ----------------------------
 // Handle voice commands
 // ----------------------------
-function handleVoiceCommand(cmd) {
-  // Map voice command numbers/words to actions
+function handleVoiceCommand(command) {
+  const cmd = command.toLowerCase();
+
   switch(cmd) {
     case '1':
     case 'get weather':
@@ -78,7 +82,6 @@ function handleVoiceCommand(cmd) {
     case '3':
     case 'get temp':
       speak("Getting temperature now");
-      // Works if button id exists on page
       document.getElementById('get-temp-btn')?.click();
       break;
     case '9':
@@ -93,15 +96,26 @@ function handleVoiceCommand(cmd) {
 }
 
 // ----------------------------
-// Auto-start voice system on page load
+// Auto-start voice system only after user enables checkbox
 // ----------------------------
 window.addEventListener('DOMContentLoaded', () => {
-  // Only greet on Home page
-  if (window.location.pathname.includes('index.html') || window.location.pathname === '/' ) {
-    greetUser();
-  }
-  startVoiceRecognition();
+  const voiceCheckbox = document.getElementById('voice');
+
+  // Greet immediately if checkbox already checked (optional)
+  if (voiceCheckbox?.checked) greetUser();
+
+  // Start voice recognition only when user enables it
+  voiceCheckbox?.addEventListener('change', () => {
+    if (voiceCheckbox.checked) {
+      greetUser();
+      startVoiceRecognition();
+    } else {
+      if (voiceStatus) voiceStatus.textContent = "Voice commands disabled.";
+      recognition?.stop();
+    }
+  });
 });
+
 
 
 
