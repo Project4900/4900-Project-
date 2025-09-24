@@ -12,8 +12,6 @@ document.addEventListener('DOMContentLoaded', () => {
   const darkModeCheckbox = document.getElementById('dark-mode');
   const big = document.getElementById('big-text');
   const contrast = document.getElementById('high-contrast');
-  const voice = document.getElementById('voice');
-  const voiceStatus = document.getElementById('voice-status');
   const status = document.getElementById('current-status');
 
   // Persisted dark mode
@@ -32,26 +30,19 @@ document.addEventListener('DOMContentLoaded', () => {
   contrast?.addEventListener('change', () => {
     document.body.style.filter = contrast.checked ? 'contrast(1.2)' : '';
   });
-  voice?.addEventListener('change', () => {
-    const msg = voice.checked
-      ? 'Voice commands enabled (placeholder).'
-      : 'Voice commands disabled.';
-    if (status) status.textContent = msg;
-    if (voiceStatus) voiceStatus.textContent = msg;
-  });
 
-  // Units helper (no Units control in UI; locked to metric)
+  // Units helper (locked to metric)
   function getUnits() {
-    return 'metric'; // 'metric' | 'imperial' — we use metric only
+    return 'metric';
   }
 
-  // Write into <span data-field="...">
+  // Update field helper
   function setField(field, value) {
     const el = document.querySelector(`[data-field="${field}"]`);
     if (el) el.textContent = value ?? '—';
   }
 
-  // ----- Fetch + render weather (current + 5-day) -----
+  // Fetch weather + forecast
   async function fetchWeather(lat, lon, units = 'metric') {
     try {
       if (status) status.textContent = 'Fetching weather data…';
@@ -73,13 +64,12 @@ document.addEventListener('DOMContentLoaded', () => {
       setField('humidity', current?.main?.humidity !== undefined ? `${current.main.humidity}%` : '—');
       setField('wind', current?.wind?.speed !== undefined ? `${Math.round(current.wind.speed)} ${windUnit}` : '—');
 
-      // FORECAST (3-hourly -> group into local days and compute highs/lows)
+      // FORECAST
       const forecastResp = await fetch(
         `${PRO_ENDPOINT}/forecast?lat=${lat}&lon=${lon}&units=${units}&appid=${API_KEY}`
       );
       if (!forecastResp.ok) throw new Error("Forecast request failed");
       const forecast = await forecastResp.json();
-
       renderForecast(forecast, units);
 
       if (status) status.textContent = 'Weather updated successfully.';
@@ -97,18 +87,16 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   }
 
-  // Render 5-day forecast with correct local-day highs/lows
+  // Render 5-day forecast
   function renderForecast(forecast, units = 'metric') {
     if (!forecast?.list?.length) return;
-
-    const tzOffsetSec = forecast?.city?.timezone ?? 0; // seconds offset from UTC
+    const tzOffsetSec = forecast?.city?.timezone ?? 0;
     const byDay = new Map();
 
     for (const item of forecast.list) {
       const localMs = (item.dt + tzOffsetSec) * 1000;
       const d = new Date(localMs);
       const key = `${d.getUTCFullYear()}-${String(d.getUTCMonth()+1).padStart(2,'0')}-${String(d.getUTCDate()).padStart(2,'0')}`;
-
       const entry = byDay.get(key) ?? { mins: [], maxs: [], samples: [] };
       if (Number.isFinite(item.main?.temp_min)) entry.mins.push(item.main.temp_min);
       if (Number.isFinite(item.main?.temp_max)) entry.maxs.push(item.main.temp_max);
@@ -124,7 +112,6 @@ document.addEventListener('DOMContentLoaded', () => {
       if (!liNodes[i]) return;
       const { mins, maxs, samples } = byDay.get(key);
 
-      // Representative description (closest to local noon)
       let repDesc = '—';
       if (samples.length) {
         let best = samples[0], bestDelta = Math.abs(samples[0].hour - 12);
@@ -135,7 +122,6 @@ document.addEventListener('DOMContentLoaded', () => {
         repDesc = best.desc || '—';
       }
 
-      // Day name from key
       const [y, m, dd] = key.split('-').map(Number);
       const dayName = new Date(Date.UTC(y, m - 1, dd)).toLocaleDateString(undefined, { weekday: 'short' });
 
@@ -151,7 +137,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  // ----- Geolocation button -----
+  // Geolocation button
   document.getElementById('geo-btn')?.addEventListener('click', () => {
     if (!navigator.geolocation) {
       if (status) status.textContent = 'Geolocation not supported by your browser.';
@@ -165,7 +151,7 @@ document.addEventListener('DOMContentLoaded', () => {
     );
   });
 
-  // ----- Search form -----
+  // Search form
   document.getElementById('location-form')?.addEventListener('submit', async e => {
     e.preventDefault();
     const searchVal = document.getElementById('search')?.value?.trim();
@@ -188,10 +174,10 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   });
 
-  // ----- Get Temp button (typed location if present, else geolocation) -----
+  // Get Temp button
   document.getElementById('get-temp-btn')?.addEventListener('click', async () => {
     const q = document.getElementById('search')?.value?.trim();
-    const units = getUnits(); // 'metric'
+    const units = getUnits();
     try {
       if (q) {
         if (status) status.textContent = 'Getting temperature for that location…';
@@ -221,3 +207,4 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   });
 });
+

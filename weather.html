@@ -1,13 +1,12 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>WeatherEase — Accessible Weather App</title>
-
   <link rel="stylesheet" href="style.css">
   <link rel="manifest" href="manifest.json?v=3">
-  <meta name="theme-color" content="#00796b"/>
+  <meta name="theme-color" content="#00796b">
   <link rel="apple-touch-icon" href="icons/weather-180.png">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-title" content="WeatherEase">
@@ -38,13 +37,11 @@
       <h2 id="current-heading">Current Conditions</h2>
 
       <!-- Search row -->
-      <form id="location-form" aria-label="Choose location"
-            style="display:flex; gap:.5rem; align-items:center; flex-wrap:wrap;">
+      <form id="location-form" aria-label="Choose location" style="display:flex; gap:.5rem; align-items:center; flex-wrap:wrap;">
         <div>
           <label for="search">City or ZIP</label>
           <input id="search" name="search" type="search" placeholder="e.g., Brooklyn, NY or 11210" />
         </div>
-
         <button type="button" id="geo-btn">Use my location</button>
         <button type="submit" id="search-btn">Search</button>
         <button type="button" id="get-temp-btn" title="Get temperature for typed location or your current location">
@@ -77,17 +74,15 @@
     </section>
 
     <!-- Alerts / Tips -->
-    <form aria-label="Alerts & Tips" style="display:grid; gap:.75rem; max-width:800px;">
-      <aside id="alerts" aria-labelledby="alerts-heading">
-        <h2 id="alerts-heading">Alerts & Tips</h2>
-        <div role="status" aria-live="polite" id="alerts-live">No active alerts.</div>
-        <ul id="tips">
-          <li>Press <kbd>Tab</kbd> to move, <kbd>Enter</kbd> to activate controls.</li>
-          <li>Use high-contrast mode in Settings if needed.</li>
-          <li>Enable voice commands to ask “What’s the weather now?”</li>
-        </ul>
-      </aside>
-    </form>
+    <aside id="alerts" aria-labelledby="alerts-heading">
+      <h2 id="alerts-heading">Alerts & Tips</h2>
+      <div role="status" aria-live="polite" id="alerts-live">No active alerts.</div>
+      <ul id="tips">
+        <li>Press <kbd>Tab</kbd> to move, <kbd>Enter</kbd> to activate controls.</li>
+        <li>Use high-contrast mode in Settings if needed.</li>
+        <li>Enable voice commands to ask “What’s the weather now?”</li>
+      </ul>
+    </aside>
 
     <!-- Settings / Accessibility -->
     <article id="settings" aria-labelledby="settings-heading">
@@ -124,7 +119,9 @@
     </div>
   </footer>
 
+  <!-- Scripts -->
   <script src="voice-control.js"></script>
   <script src="script.js"></script>
 </body>
 </html>
+
