@@ -1,11 +1,10 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>WeatherEase — Home</title>
   <link rel="stylesheet" href="style.css" />
-  <meta name="theme-color" content="#00796b" />
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"/>
 
   <!-- PWA Manifest -->
@@ -24,26 +23,27 @@
     <p>Quick access to your weather, settings, or exit the app.</p>
 
     <div class="dashboard-buttons">
-      <a href="weather.html#current" class="home-button">
+      <a href="weather.html#current" class="home-button" aria-label="Weather">
         <i class="fas fa-cloud-sun"></i><br/>Weather
       </a>
-      <a href="weather.html#settings" class="home-button">
+      <a href="weather.html#settings" class="home-button" aria-label="Settings">
         <i class="fas fa-cog"></i><br/>Settings
       </a>
-      <button onclick="exitApp()" class="home-button">
+      <button onclick="exitApp()" class="home-button" aria-label="Exit App">
         <i class="fas fa-sign-out-alt"></i><br/>Exit App
       </button>
-
-      <!-- NEW: Get Temp quick-check -->
-      <button id="get-temp" class="home-button" aria-label="Get current temperature">
+      <button id="get-temp" class="home-button" aria-label="Get Temperature">
         <i class="fas fa-thermometer-half"></i><br/>Get Temp
       </button>
     </div>
 
-    <!-- Live readout -->
-    <div id="quick-temp-readout" aria-live="polite"
-         style="text-align:center;margin-top:.75rem;font-weight:600;">
-      —
+    <!-- Voice command checkbox + status -->
+    <div style="margin-top: 2rem; text-align: center;">
+      <label>
+        <input type="checkbox" id="voice" /> Enable voice commands
+      </label>
+      <div id="voice-status" style="margin-top:0.5rem; font-weight:600;">Voice status will appear here…</div>
+      <div id="focus-box"></div>
     </div>
   </div>
 
@@ -53,7 +53,8 @@
     }
   </script>
 
-  <!-- Load your app logic on the home page -->
+  <!-- Voice command system -->
+  <script src="voice-control.js" defer></script>
   <script src="script.js" defer></script>
 </body>
 </html>
