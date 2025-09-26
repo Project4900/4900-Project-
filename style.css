@@ -278,3 +278,11 @@ body.dark-mode {
         outline: 2px solid #fff;
         outline-offset: 2px;
     }
+
+/* added background image */
+    #current {
+  /* background-image: url("https://images.unsplash.com/photo-1501630834273-4b5604d2ee31");  */
+  background-image: url("https://platform.vox.com/wp-content/uploads/sites/2/chorus/uploads/chorus_asset/file/15788040/20150428-cloud-computing.0.1489222360.jpg?quality=90&strip=all&crop=0,5.5555555555556,100,88.888888888889");
+  background-size: cover;
+  color: #fff;
+}
