@@ -70,6 +70,7 @@ function handleVoiceCommand(command) {
 
   switch(cmd) {
     case '1':
+    case 'one':
     case 'get weather':
       speak("Navigating to Weather page");
       window.location.href = "weather.html#current";
