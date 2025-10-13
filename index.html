@@ -1,101 +1,35 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>WeatherEase — Home</title>
-  <link rel="stylesheet" href="style.css" />
-  <meta name="theme-color" content="#00796b" />
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"/>
-  <link rel="manifest" href="manifest.json" />
-  <link rel="apple-touch-icon" href="icons/weather-180.png" />
-  <meta name="apple-mobile-web-app-capable" content="yes" />
-  <meta name="apple-mobile-web-app-title" content="WeatherEase" />
-  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <div class="home-container">
+  <header>
     <h1>WeatherEase</h1>
-    <p>Quick access to your weather, settings, or exit the app.</p>
+    <nav>
+      <a href="weather.html">Weather</a>
+      <a href="settings.html">Settings</a>
+      <a href="exit.html">Exit</a>
+    </nav>
+  </header>
 
+  <main>
     <div class="dashboard-buttons">
-      <a href="weather.html#current" class="home-button" aria-label="Get Weather"> 
-        <i class="fas fa-cloud-sun"></i><br/>Weather
-      </a>
-      <a href="weather.html#settings" class="home-button" aria-label="Settings"> 
-        <i class="fas fa-cog"></i><br/>Settings
-      </a>
-      <button id="get-temp-btn" class="home-button" aria-label="Get Temperature">
-        <i class="fas fa-thermometer-half"></i><br/>Get Temp
-      </button>
-      <button onclick="exitApp()" class="home-button" aria-label="Exit App">
-        <i class="fas fa-sign-out-alt"></i><br/>Exit App
-      </button>
+      <button class="home-button" id="get-weather-btn">🌤️ Weather</button>
+      <button class="home-button" id="settings-btn">⚙️ Settings</button>
+      <button class="home-button" id="exit-btn">❌ Exit</button>
+      <button class="home-button" id="start-voice-btn">🎤 Start Voice Commands</button>
+      <div id="voice-status" style="margin-top:1rem;"></div>
     </div>
+  </main>
 
-    <div id="quick-temp-readout" aria-live="polite"
-         style="text-align:center;margin-top:.75rem;font-weight:600;">
-      —
-    </div>
-  </div>
+  <footer>
+    <p>&copy; <span id="year"></span> WeatherEase</p>
+  </footer>
 
-  <script>
-    const API_KEY = "2c1fb322de5c86e87d6eb7e265fe9f32";
-    const PRO_ENDPOINT = "https://pro.openweathermap.org/data/2.5";
-
-    function exitApp() {
-      window.location.href = "exit.html";
-    }
-
-    async function fetchWeather(lat, lon, units = 'metric') {
-      try {
-        const currentResp = await fetch(
-          `${PRO_ENDPOINT}/weather?lat=${lat}&lon=${lon}&units=${units}&appid=${API_KEY}`
-        );
-        if (!currentResp.ok) throw new Error("Current weather request failed");
-        const current = await currentResp.json();
-
-        const unitSymbol = units === 'imperial' ? '°F' : '°C';
-        const place = `${current.name || ''}${current.sys?.country ? ', ' + current.sys.country : ''}`;
-        const temp = current?.main?.temp !== undefined ? `${Math.round(current.main.temp)}${unitSymbol}` : '—';
-
-        document.getElementById('quick-temp-readout').textContent = `${place}: ${temp}`;
-
-        const message = place && temp !== '—' ? `The current temperature in ${place} is ${temp}` : 'Unable to get the temperature at this moment';
-        if (window.speechSynthesis) {
-          const utter = new SpeechSynthesisUtterance(message);
-          window.speechSynthesis.speak(utter);
-        }
-      } catch (err) {
-        console.error(err);
-        document.getElementById('quick-temp-readout').textContent = 'Error fetching temperature';
-        if (window.speechSynthesis) {
-          window.speechSynthesis.speak(new SpeechSynthesisUtterance('Could not get temperature. Please try again.'));
-        }
-      }
-    }
-
-    document.getElementById('get-temp-btn')?.addEventListener('click', async () => {
-      if (navigator.geolocation) {
-        navigator.geolocation.getCurrentPosition(
-          ({ coords }) => fetchWeather(coords.latitude, coords.longitude),
-          () => {
-            if (window.speechSynthesis) window.speechSynthesis.speak(new SpeechSynthesisUtterance('Unable to get your location.'));
-          }
-        );
-      } else {
-        if (window.speechSynthesis) window.speechSynthesis.speak(new SpeechSynthesisUtterance('Geolocation not supported.'));
-      }
-    });
-  </script>
-
-  <!-- Voice control -->
   <script src="voice-control.js"></script>
-  <!-- General app script -->
-  <script src="script.js"></script>
 </body>
 </html>
-
-
-
-
