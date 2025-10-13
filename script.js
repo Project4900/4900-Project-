@@ -5,21 +5,18 @@ const PRO_ENDPOINT = "https://pro.openweathermap.org/data/2.5";
 
 document.addEventListener('DOMContentLoaded', () => {
   // ----------------------------
-  // Elements
+  // Basic DOM references
   // ----------------------------
   const yearEl = document.getElementById('year');
+  if (yearEl) yearEl.textContent = new Date().getFullYear();
+
   const darkModeCheckbox = document.getElementById('dark-mode');
   const big = document.getElementById('big-text');
   const contrast = document.getElementById('high-contrast');
   const status = document.getElementById('current-status');
 
   // ----------------------------
-  // Display current year
-  // ----------------------------
-  if (yearEl) yearEl.textContent = new Date().getFullYear();
-
-  // ----------------------------
-  // Dark mode toggle
+  // Persist dark mode
   // ----------------------------
   if (localStorage.getItem('darkMode') === 'true') {
     document.body.classList.add('dark-mode');
@@ -31,22 +28,29 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 
   // ----------------------------
-  // Big text / high contrast toggles
+  // Big text toggle
   // ----------------------------
   big?.addEventListener('change', () => {
     document.documentElement.style.fontSize = big.checked ? '18px' : '';
   });
+
+  // ----------------------------
+  // High contrast toggle
+  // ----------------------------
   contrast?.addEventListener('change', () => {
     document.body.style.filter = contrast.checked ? 'contrast(1.2)' : '';
   });
 
   // ----------------------------
-  // Helper functions
+  // Units helper (locked to metric)
   // ----------------------------
   function getUnits() {
     return 'metric';
   }
 
+  // ----------------------------
+  // Helper to update DOM fields
+  // ----------------------------
   function setField(field, value) {
     const el = document.querySelector(`[data-field="${field}"]`);
     if (el) el.textContent = value ?? '—';
@@ -59,7 +63,7 @@ document.addEventListener('DOMContentLoaded', () => {
     try {
       if (status) status.textContent = 'Fetching weather data…';
 
-      // ---- CURRENT WEATHER ----
+      // -------- Current Weather --------
       const currentResp = await fetch(
         `${PRO_ENDPOINT}/weather?lat=${lat}&lon=${lon}&units=${units}&appid=${API_KEY}`
       );
@@ -67,20 +71,16 @@ document.addEventListener('DOMContentLoaded', () => {
       const current = await currentResp.json();
 
       const unitSymbol = units === 'imperial' ? '°F' : '°C';
-      const windUnit  = units === 'imperial' ? 'mph' : 'm/s';
+      const windUnit = units === 'imperial' ? 'mph' : 'm/s';
 
       setField('place', `${current.name || ''}${current.sys?.country ? ', ' + current.sys.country : ''}`);
-      setField('temp',  current?.main?.temp       !== undefined ? `${Math.round(current.main.temp)}${unitSymbol}` : '—');
+      setField('temp', current?.main?.temp !== undefined ? `${Math.round(current.main.temp)}${unitSymbol}` : '—');
       setField('feels', current?.main?.feels_like !== undefined ? `${Math.round(current.main.feels_like)}${unitSymbol}` : '—');
-      setField('desc',  current?.weather?.[0]?.description ?? '—');
+      setField('desc', current?.weather?.[0]?.description ?? '—');
       setField('humidity', current?.main?.humidity !== undefined ? `${current.main.humidity}%` : '—');
       setField('wind', current?.wind?.speed !== undefined ? `${Math.round(current.wind.speed)} ${windUnit}` : '—');
 
-      // ---- SET FLAG FOR VOICE ----
-      window.weatherDataReady = true; // make global for voice script to read
-      if (status) status.textContent = 'Weather updated successfully.';
-
-      // ---- FORECAST ----
+      // -------- Forecast --------
       const forecastResp = await fetch(
         `${PRO_ENDPOINT}/forecast?lat=${lat}&lon=${lon}&units=${units}&appid=${API_KEY}`
       );
@@ -88,41 +88,42 @@ document.addEventListener('DOMContentLoaded', () => {
       const forecast = await forecastResp.json();
       renderForecast(forecast, units);
 
-      // Notify voice script that forecast is ready
-      if (typeof onWeatherReady === 'function') onWeatherReady();
-
+      if (status) status.textContent = 'Weather updated successfully.';
     } catch (err) {
       console.error(err);
       if (status) status.textContent = 'Error fetching location. Check spelling or try again.';
-      setField('place','—'); setField('temp','—'); setField('feels','—');
-      setField('desc','—');  setField('humidity','—'); setField('wind','—');
+      // Reset fields
+      ['place','temp','feels','desc','humidity','wind'].forEach(f => setField(f,'—'));
       document.querySelectorAll('#forecast-list li').forEach(li => {
-        li.querySelector('[data-day]').textContent  = '—';
+        li.querySelector('[data-day]').textContent = '—';
         li.querySelector('[data-high]').textContent = '—';
-        li.querySelector('[data-low]').textContent  = '—';
+        li.querySelector('[data-low]').textContent = '—';
         li.querySelector('[data-desc]').textContent = '—';
       });
-      window.weatherDataReady = false;
     }
   }
 
   // ----------------------------
-  // Render 5-day forecast
+  // Render 5-day forecast correctly
   // ----------------------------
   function renderForecast(forecast, units = 'metric') {
     if (!forecast?.list?.length) return;
-    const tzOffsetSec = forecast?.city?.timezone ?? 0;
+
+    const tzOffsetSec = forecast?.city?.timezone ?? 0; // timezone offset in seconds
     const byDay = new Map();
 
-    // Group forecast by day
+    // Group forecast items by local day
     for (const item of forecast.list) {
-      const localMs = (item.dt + tzOffsetSec) * 1000;
+      const localMs = (item.dt + tzOffsetSec) * 1000; // convert to ms and adjust timezone
       const d = new Date(localMs);
-      const key = `${d.getUTCFullYear()}-${String(d.getUTCMonth()+1).padStart(2,'0')}-${String(d.getUTCDate()).padStart(2,'0')}`;
+
+      // Use local date for key
+      const key = `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+
       const entry = byDay.get(key) ?? { mins: [], maxs: [], samples: [] };
       if (Number.isFinite(item.main?.temp_min)) entry.mins.push(item.main.temp_min);
       if (Number.isFinite(item.main?.temp_max)) entry.maxs.push(item.main.temp_max);
-      entry.samples.push({ hour: d.getUTCHours(), desc: item.weather?.[0]?.description ?? '' });
+      entry.samples.push({ hour: d.getHours(), desc: item.weather?.[0]?.description ?? '' });
       byDay.set(key, entry);
     }
 
@@ -133,30 +134,26 @@ document.addEventListener('DOMContentLoaded', () => {
 
     dayKeys.forEach((key, i) => {
       if (!liNodes[i]) return;
+
       const { mins, maxs, samples } = byDay.get(key);
 
-      // Choose description closest to noon
+      // Pick representative description (closest to midday)
       let repDesc = '—';
       if (samples.length) {
         let best = samples[0], bestDelta = Math.abs(samples[0].hour - 12);
         for (const s of samples) {
-          const d = Math.abs(s.hour - 12);
-          if (d < bestDelta) { best = s; bestDelta = d; }
+          const delta = Math.abs(s.hour - 12);
+          if (delta < bestDelta) { best = s; bestDelta = delta; }
         }
         repDesc = best.desc || '—';
       }
 
       const [y, m, dd] = key.split('-').map(Number);
-      const dayName = new Date(Date.UTC(y, m - 1, dd)).toLocaleDateString(undefined, { weekday: 'short' });
+      const dayName = new Date(y, m-1, dd).toLocaleDateString(undefined, { weekday: 'short' });
 
-      const highs = maxs.filter(Number.isFinite);
-      const lows  = mins.filter(Number.isFinite);
-      const hi = highs.length ? Math.round(Math.max(...highs)) : null;
-      const lo = lows.length  ? Math.round(Math.min(...lows))  : null;
-
-      liNodes[i].querySelector('[data-day]').textContent  = dayName;
-      liNodes[i].querySelector('[data-high]').textContent = hi !== null ? `${hi}${unitSymbol}` : '—';
-      liNodes[i].querySelector('[data-low]').textContent  = lo !== null ? `${lo}${unitSymbol}` : '—';
+      liNodes[i].querySelector('[data-day]').textContent = dayName;
+      liNodes[i].querySelector('[data-high]').textContent = maxs.length ? `${Math.round(Math.max(...maxs))}${unitSymbol}` : '—';
+      liNodes[i].querySelector('[data-low]').textContent = mins.length ? `${Math.round(Math.min(...mins))}${unitSymbol}` : '—';
       liNodes[i].querySelector('[data-desc]').textContent = repDesc;
     });
   }
@@ -178,7 +175,7 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 
   // ----------------------------
-  // Search form
+  // Search form submit
   // ----------------------------
   document.getElementById('location-form')?.addEventListener('submit', async e => {
     e.preventDefault();
@@ -202,4 +199,3 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   });
 });
-
