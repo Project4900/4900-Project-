@@ -152,7 +152,7 @@ document.addEventListener('DOMContentLoaded', () => {
       }
 
       const [y, m, dd] = key.split('-').map(Number);
-      const dayName = new Date(y, m-1, dd).toLocaleDateString(undefined, { weekday: 'short' });
+      const dayName = new Date(y, m-1, dd).toLocaleDateString(undefined, { weekday: 'long' });
 
       liNodes[i].querySelector('[data-day]').textContent = dayName;
       liNodes[i].querySelector('[data-high]').textContent = maxs.length ? `${Math.round(Math.max(...maxs))}${unitSymbol}` : '—';
