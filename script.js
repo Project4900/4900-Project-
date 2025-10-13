@@ -3,6 +3,9 @@ console.log("WeatherEase App loaded");
 const API_KEY = "2c1fb322de5c86e87d6eb7e265fe9f32";
 const PRO_ENDPOINT = "https://pro.openweathermap.org/data/2.5";
 
+// Make weatherDataReady global so voice script can see it
+window.weatherDataReady = false;
+
 document.addEventListener('DOMContentLoaded', () => {
   // ----------------------------
   // Basic DOM references
@@ -61,6 +64,7 @@ document.addEventListener('DOMContentLoaded', () => {
   // ----------------------------
   async function fetchWeather(lat, lon, units = 'metric') {
     try {
+      window.weatherDataReady = false; // reset at start
       if (status) status.textContent = 'Fetching weather data…';
 
       // -------- Current Weather --------
@@ -89,8 +93,12 @@ document.addEventListener('DOMContentLoaded', () => {
       renderForecast(forecast, units);
 
       if (status) status.textContent = 'Weather updated successfully.';
+
+      // ✅ Weather is ready for voice
+      window.weatherDataReady = true;
     } catch (err) {
       console.error(err);
+      window.weatherDataReady = false;
       if (status) status.textContent = 'Error fetching location. Check spelling or try again.';
       // Reset fields
       ['place','temp','feels','desc','humidity','wind'].forEach(f => setField(f,'—'));
@@ -104,20 +112,18 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   // ----------------------------
-  // Render 5-day forecast correctly
+  // Render 5-day forecast
   // ----------------------------
   function renderForecast(forecast, units = 'metric') {
     if (!forecast?.list?.length) return;
 
-    const tzOffsetSec = forecast?.city?.timezone ?? 0; // timezone offset in seconds
+    const tzOffsetSec = forecast?.city?.timezone ?? 0;
     const byDay = new Map();
 
-    // Group forecast items by local day
     for (const item of forecast.list) {
-      const localMs = (item.dt + tzOffsetSec) * 1000; // convert to ms and adjust timezone
+      const localMs = (item.dt + tzOffsetSec) * 1000;
       const d = new Date(localMs);
 
-      // Use local date for key
       const key = `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
 
       const entry = byDay.get(key) ?? { mins: [], maxs: [], samples: [] };
@@ -127,17 +133,14 @@ document.addEventListener('DOMContentLoaded', () => {
       byDay.set(key, entry);
     }
 
-    // Take first 5 days
     const dayKeys = Array.from(byDay.keys()).sort().slice(0, 5);
     const liNodes = document.querySelectorAll('#forecast-list li');
     const unitSymbol = units === 'imperial' ? '°F' : '°C';
 
     dayKeys.forEach((key, i) => {
       if (!liNodes[i]) return;
-
       const { mins, maxs, samples } = byDay.get(key);
 
-      // Pick representative description (closest to midday)
       let repDesc = '—';
       if (samples.length) {
         let best = samples[0], bestDelta = Math.abs(samples[0].hour - 12);
