@@ -68,7 +68,7 @@ nav a:focus {
 /* Nav bar links and the enable voice button */
 nav a,
 .nav-link-btn {
-    color: #00796b;
+    color: #250895;
     text-decoration: none;
     padding: .5rem 1rem;
     font: inherit;
