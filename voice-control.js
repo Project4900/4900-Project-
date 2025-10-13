@@ -26,9 +26,9 @@ window.addEventListener('DOMContentLoaded', () => {
     // ----------------------------
     function greetUser() {
         const greeting = `Welcome to WeatherEase!
-Say 1 or one: Weather
-Say 2 or two: Settings
-Say 9 or nine: Exit`;
+        Say 1: Weather
+        Say 2: Settings
+        Say 9: Exit`;
         speak(greeting);
         voiceStatus.textContent = "Awaiting voice command...";
     }

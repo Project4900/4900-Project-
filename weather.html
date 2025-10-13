@@ -7,14 +7,17 @@
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <header>
-    <h1>WeatherEase</h1>
-    <nav>
-      <a href="index.html">Home</a>
-      <a href="settings.html">Settings</a>
-      <a href="exit.html">Exit</a>
-    </nav>
-  </header>
+<header>
+  <h1>WeatherEase</h1>
+  <nav>
+    <ul style="display:flex; align-items:center; gap:1rem; list-style:none; padding:0; margin:0;">
+      <li><a href="index.html">Home</a></li>
+      <li><a href="settings.html">Settings</a></li>
+      <li><a href="exit.html">Exit</a></li>
+      <li><button id="enable-voice-btn" class="nav-link-btn">Enable Voice</button></li>
+    </ul>
+  </nav>
+</header>
 
   <main>
     <!-- Current conditions -->
@@ -23,7 +26,7 @@
       <form id="location-form" style="display:flex; gap:.5rem; flex-wrap:wrap;">
         <input id="search" type="search" placeholder="City or ZIP"/>
         <button type="button" id="geo-btn">Use My Location</button>
-        <button type="button" id="get-temp-btn">Get Temp</button>
+        <!-- Removed Get Temp button -->
       </form>
 
       <div id="current-card">
@@ -36,7 +39,6 @@
       </div>
 
       <div id="current-status" aria-live="polite" style="opacity:.8;">Ready.</div>
-    </section>
 
     <!-- Forecast -->
     <section id="forecast">
@@ -51,7 +53,9 @@
     </section>
   </main>
 
+  <!-- Scripts -->
   <script src="voice-control-weather.js"></script>
   <script src="script.js"></script>
 </body>
 </html>
+

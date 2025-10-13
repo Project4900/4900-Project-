@@ -64,6 +64,30 @@ nav a {
         background: rgba(255,255,255,15);
     }
 
+/* Nav bar links and the enable voice button */
+nav a,
+.nav-link-btn {
+    color: #00796b;           /* same as links */
+    text-decoration: none;    /* remove underline */
+    padding: .5rem 1rem;      /* spacing similar to links */
+    font: inherit;            /* match nav font */
+    background: none;         /* remove button background */
+    border: none;             /* remove button border */
+    cursor: pointer;
+    border-radius: .25rem;    /* optional: match link hover shape */
+    transition: background 0.2s ease;
+}
+
+nav a:hover,
+.nav-link-btn:hover,
+nav a:focus,
+.nav-link-btn:focus {
+    background: #b2ebf2;      /* match link hover background */
+    color: #004d40;           /* optional hover text color */
+    outline: none;
+}
+
+
 /* Layout */
 main {
     max-width: var(--max-w);

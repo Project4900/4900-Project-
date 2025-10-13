@@ -3,31 +3,30 @@
 // =========================
 
 // DOM elements
-const voiceCheckbox = document.getElementById('voice');
+const enableVoiceBtn = document.getElementById('enable-voice-btn'); // Button in nav
 const currentStatus = document.getElementById('current-status');
 const currentCard = document.getElementById('current-card');
 const forecastList = document.getElementById('forecast-list');
-const homeBtn = document.getElementById('home-btn');
-const getTempBtn = document.getElementById('get-temp-btn');
-const geoBtn = document.getElementById('geo-btn');
+const homeBtn = document.getElementById('home-btn'); // optional home button if exists
+const geoBtn = document.getElementById('geo-btn');   // "Use My Location" button
 
-const synth = window.speechSynthesis;
-let recognition;
-let voiceEnabled = false;
-let weatherDataReady = false;  // Set true after weather fetch
+const synth = window.speechSynthesis; // Speech API
+let recognition;                      // Speech recognition instance
+let voiceEnabled = false;             // Tracks if voice is active
+let weatherDataReady = false;         // Becomes true after weather fetch
 
 // ----------------------------
-// Speak text
+// Speak text if voice enabled
 // ----------------------------
 function speak(text) {
   if (!voiceEnabled) return;
-  if (synth.speaking) synth.cancel();
+  if (synth.speaking) synth.cancel(); // Stop ongoing speech
   const utter = new SpeechSynthesisUtterance(text);
   synth.speak(utter);
 }
 
 // ----------------------------
-// Greet user
+// Greet user with available commands
 // ----------------------------
 function greetUser() {
   const greeting = `Welcome to WeatherEase Weather page!
@@ -44,7 +43,7 @@ Say:
 }
 
 // ----------------------------
-// Start voice recognition
+// Start speech recognition
 // ----------------------------
 function startRecognition() {
   if (!('webkitSpeechRecognition' in window || 'SpeechRecognition' in window)) {
@@ -71,52 +70,50 @@ function startRecognition() {
   };
 
   recognition.onend = () => {
+    // Keep listening as long as voiceEnabled
     if (voiceEnabled) recognition.start();
   };
 }
 
 // ----------------------------
-// Handle commands
+// Handle recognized commands
 // ----------------------------
 function handleCommand(cmd) {
-  if (!weatherDataReady) { speak("Weather data is not ready yet."); return; }
+  if (!weatherDataReady) { 
+    speak("Weather data is not ready yet."); 
+    return; 
+  }
 
   switch(cmd) {
-    case '1':
-    case 'one':
-    case 'temperature':
-    case 'current temperature': speakCurrent('temp'); break;
-    case '2':
-    case 'two':
-    case 'feels like': speakCurrent('feels'); break;
-    case '3':
-    case 'three':
-    case 'condition': speakCurrent('desc'); break;
-    case '4':
-    case 'four':
-    case 'humidity': speakCurrent('humidity'); break;
-    case '5':
-    case 'five':
-    case 'wind': speakCurrent('wind'); break;
-    case '6':
-    case 'six':
-    case 'forecast':
-    case 'five day forecast': speakForecast(); break;
-    case '7':
-    case 'seven':
-    case 'home':
-    case 'return home': speak("Returning home"); homeBtn?.click(); break;
-    default: speak("Command not recognized. Please try again."); break;
+    case '1': case 'one': case 'temperature': case 'current temperature':
+      speakCurrent('temp'); break;
+    case '2': case 'two': case 'feels like':
+      speakCurrent('feels'); break;
+    case '3': case 'three': case 'condition':
+      speakCurrent('desc'); break;
+    case '4': case 'four': case 'humidity':
+      speakCurrent('humidity'); break;
+    case '5': case 'five': case 'wind':
+      speakCurrent('wind'); break;
+    case '6': case 'six': case 'forecast': case 'five day forecast':
+      speakForecast(); break;
+    case '7': case 'seven': case 'home': case 'return home':
+      speak("Returning home"); homeBtn?.click(); break;
+    default:
+      speak("Command not recognized. Please try again."); break;
   }
 }
 
 // ----------------------------
-// Speak current weather field
+// Speak individual current weather fields
 // ----------------------------
 function speakCurrent(field) {
   const el = document.querySelector(`[data-field="${field}"]`);
-  if (el && el.textContent && el.textContent !== '—') speak(`${field.replace('-', ' ')} is ${el.textContent}`);
-  else speak(`${field.replace('-', ' ')} is not available`);
+  if (el && el.textContent && el.textContent !== '—') {
+    speak(`${field.replace('-', ' ')} is ${el.textContent}`);
+  } else {
+    speak(`${field.replace('-', ' ')} is not available`);
+  }
 }
 
 // ----------------------------
@@ -138,22 +135,18 @@ function speakForecast() {
 }
 
 // ----------------------------
-// Enable voice recognition
+// Enable voice via nav button
 // ----------------------------
-voiceCheckbox?.addEventListener('change', () => {
-  if (voiceCheckbox.checked) {
-    voiceEnabled = true;
-    greetUser();
-    startRecognition();
-  } else {
-    voiceEnabled = false;
-    recognition?.stop();
-    if (currentStatus) currentStatus.textContent = "Voice commands disabled.";
-  }
+enableVoiceBtn?.addEventListener('click', () => {
+  voiceEnabled = true;
+  greetUser();
+  startRecognition();
+  enableVoiceBtn.disabled = true;  // prevent re-click
+  enableVoiceBtn.textContent = "Voice Enabled";
 });
 
 // ----------------------------
-// Speak weather immediately after fetching
+// Speak weather shortly after fetching
 // ----------------------------
 function speakWeatherImmediately() {
   if (!weatherDataReady) return;
@@ -165,18 +158,8 @@ function speakWeatherImmediately() {
 }
 
 // ----------------------------
-// Hook Get Temp button
-// ----------------------------
-getTempBtn?.addEventListener('click', () => {
-  // Assuming you already fetch the weather when clicked
-  setTimeout(() => speakWeatherImmediately(), 500); // delay to ensure data is ready
-});
-
-// ----------------------------
-// Hook Use My Location button
+// Hook "Use My Location" button
 // ----------------------------
 geoBtn?.addEventListener('click', () => {
-  // Geolocation fetch happens elsewhere; just read weather after a short delay
-  setTimeout(() => speakWeatherImmediately(), 2000); // adjust delay based on fetch time
+  setTimeout(() => speakWeatherImmediately(), 2000); // delay for fetch
 });
-
