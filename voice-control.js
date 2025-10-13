@@ -1,140 +1,104 @@
 // =========================
-// Voice Control System
-// Works for Home and Settings pages
+// Home Page Voice + Button Navigation
 // =========================
-
 window.addEventListener('DOMContentLoaded', () => {
-
-  // ----------------------------
-  // Grab elements from DOM
-  // ----------------------------
-  // Button to enable voice commands (home or settings page)
-  const startVoiceBtn = document.getElementById('start-voice-btn') || document.getElementById('voice');
-
-  // Status text to show user messages
-  const voiceStatus = document.getElementById('voice-status');
-
-  // SpeechSynthesis API
-  const synth = window.speechSynthesis;
-
-  // SpeechRecognition object
-  let recognition;
-
-  // Flag to indicate if voice commands are enabled
-  let voiceEnabled = false;
-
-  // ----------------------------
-  // Speak text function
-  // ----------------------------
-  // Uses the Web Speech API to speak any string
-  function speak(text) {
-    if(!voiceEnabled) return;          // Do nothing if voice not enabled
-    if(synth.speaking) synth.cancel(); // Stop any ongoing speech
-    const utter = new SpeechSynthesisUtterance(text);
-    synth.speak(utter);
-  }
-
-  // ----------------------------
-  // Greet user with instructions
-  // ----------------------------
-  function greetUser() {
-    const greeting = `Welcome to WeatherEase!
-Say 1: Weather
-Say 2: Settings
-Say 9: Exit`;
-    
-    // Speak the greeting
-    speak(greeting);
-
-    // Update status text
-    if(voiceStatus) voiceStatus.textContent = "Awaiting voice command...";
-  }
-
-  // ----------------------------
-  // Start voice recognition
-  // ----------------------------
-  function startRecognition() {
-    // Check if browser supports SpeechRecognition
-    if (!('webkitSpeechRecognition' in window || 'SpeechRecognition' in window)) {
-      if(voiceStatus) voiceStatus.textContent = "Voice commands not supported in this browser.";
-      return;
-    }
-
-    // Initialize SpeechRecognition
-    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-    recognition = new SpeechRecognition();
-    recognition.lang = 'en-US';       // Set language
-    recognition.interimResults = false; // Only final results
-    recognition.maxAlternatives = 1;    // One possible result
-
-    // Start listening
-    recognition.start();
+    const weatherBtn = document.getElementById('weather-btn');
+    const settingsBtn = document.getElementById('settings-btn');
+    const exitBtn = document.getElementById('exit-btn');
+    const startVoiceBtn = document.getElementById('start-voice-btn');
+    const voiceStatus = document.getElementById('voice-status');
+    const synth = window.speechSynthesis;
+    let recognition;
+    let voiceEnabled = false;
 
     // ----------------------------
-    // Handle recognized speech
+    // Speak text
     // ----------------------------
-    recognition.onresult = event => {
-      // Take the first result, trim, and lowercase
-      const command = event.results[0][0].transcript.trim().toLowerCase();
-      handleVoiceCommand(command);
-    };
-
-    // Handle errors
-    recognition.onerror = event => {
-      if(voiceStatus) voiceStatus.textContent = `Error: ${event.error}`;
-    };
-
-    // Restart recognition automatically if enabled
-    recognition.onend = () => {
-      if(voiceEnabled) recognition.start();
-    };
-  }
-
-  // ----------------------------
-  // Handle commands
-  // ----------------------------
-  function handleVoiceCommand(cmd) {
-    switch(cmd){
-      case '1': 
-      case 'one':
-      case 'weather': 
-      case 'get weather':
-        speak("Opening Weather page");
-        window.location.href = "weather.html";
-        break;
-
-      case '2': 
-      case 'two':
-      case 'settings':
-        speak("Opening Settings page");
-        window.location.href = "settings.html";
-        break;
-
-      case '9': 
-      case 'nine':
-      case 'exit':
-        speak("Exiting app");
-        window.location.href = "exit.html";
-        break;
-
-      default:
-        speak("Command not recognized."); // Fallback for unknown commands
-        break;
+    function speak(text) {
+        if(!voiceEnabled) return;
+        if (synth.speaking) synth.cancel();
+        const utter = new SpeechSynthesisUtterance(text);
+        synth.speak(utter);
     }
-  }
 
-  // ----------------------------
-  // Enable voice commands on button click
-  // ----------------------------
-  if(startVoiceBtn){
-    startVoiceBtn.addEventListener('click', () => {
-      voiceEnabled = true;   // Turn on voice
-      greetUser();           // Speak greeting
-      startRecognition();    // Start listening
-      if(startVoiceBtn.id === 'voice') startVoiceBtn.style.display = "none"; // Hide button on settings page
+    // ----------------------------
+    // Greet user
+    // ----------------------------
+    function greetUser() {
+        const greeting = `Welcome to WeatherEase!
+Say 1 or one: Weather
+Say 2 or two: Settings
+Say 9 or nine: Exit`;
+        speak(greeting);
+        voiceStatus.textContent = "Awaiting voice command...";
+    }
+
+    // ----------------------------
+    // Start voice recognition
+    // ----------------------------
+    function startVoiceRecognition() {
+        if (!('webkitSpeechRecognition' in window || 'SpeechRecognition' in window)) {
+            voiceStatus.textContent = "Voice commands not supported in this browser.";
+            return;
+        }
+
+        const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+        recognition = new SpeechRecognition();
+        recognition.lang = 'en-US';
+        recognition.interimResults = false;
+        recognition.maxAlternatives = 1;
+
+        recognition.start();
+
+        recognition.onresult = (event) => {
+            const command = event.results[0][0].transcript.trim().toLowerCase();
+            handleVoiceCommand(command);
+        };
+
+        recognition.onerror = (event) => {
+            voiceStatus.textContent = `Error: ${event.error}`;
+        };
+
+        recognition.onend = () => {
+            if (voiceEnabled) setTimeout(() => recognition.start(), 300);
+        };
+    }
+
+    // ----------------------------
+    // Handle voice commands
+    // ----------------------------
+    function handleVoiceCommand(cmd) {
+        switch(cmd) {
+            case '1': case 'one': case 'get weather': case 'weather':
+                speak("Opening Weather page");
+                window.location.href = "weather.html";
+                break;
+            case '2': case 'two': case 'settings':
+                speak("Opening Settings page");
+                window.location.href = "settings.html";
+                break;
+            case '9': case 'nine': case 'exit':
+                speak("Exiting app");
+                window.location.href = "exit.html";
+                break;
+            default:
+                speak("Command not recognized, please try again.");
+        }
+    }
+
+    // ----------------------------
+    // Button click handlers
+    // ----------------------------
+    weatherBtn?.addEventListener('click', () => window.location.href = "weather.html");
+    settingsBtn?.addEventListener('click', () => window.location.href = "settings.html");
+    exitBtn?.addEventListener('click', () => window.location.href = "exit.html");
+
+    startVoiceBtn?.addEventListener('click', () => {
+        voiceEnabled = true;
+        speak("Voice features enabled!");
+        startVoiceRecognition();
+        greetUser();
+        startVoiceBtn.style.display = "none";
     });
-  }
 });
-
-
 
