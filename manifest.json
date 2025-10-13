@@ -3,8 +3,8 @@
   "short_name": "WeatherEase",
   "start_url": "./index.html",
   "display": "standalone",
-  "background_color": "#e0f7fa",
-  "theme_color": "#00796b",
+  "background_color": "#e1f5fe",
+  "theme_color": "#0277bd",
   "icons": [
     {
       "src": "icons/weather-192.png",
