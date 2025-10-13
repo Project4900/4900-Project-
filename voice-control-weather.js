@@ -3,30 +3,30 @@
 // =========================
 
 // DOM elements
-const enableVoiceBtn = document.getElementById('enable-voice-btn'); // Button in nav
 const currentStatus = document.getElementById('current-status');
 const currentCard = document.getElementById('current-card');
 const forecastList = document.getElementById('forecast-list');
-const homeBtn = document.getElementById('home-btn'); // optional home button if exists
-const geoBtn = document.getElementById('geo-btn');   // "Use My Location" button
+const homeBtn = document.querySelector('a[href="index.html"]'); // safer than id
+const geoBtn = document.getElementById('geo-btn');
+const enableVoiceBtn = document.getElementById('enable-voice-btn');
 
-const synth = window.speechSynthesis; // Speech API
-let recognition;                      // Speech recognition instance
-let voiceEnabled = false;             // Tracks if voice is active
-let weatherDataReady = false;         // Becomes true after weather fetch
+const synth = window.speechSynthesis;
+let recognition;
+let voiceEnabled = false;
+let weatherDataReady = false;  // true after weather fetch completes
 
 // ----------------------------
-// Speak text if voice enabled
+// Speak text
 // ----------------------------
 function speak(text) {
   if (!voiceEnabled) return;
-  if (synth.speaking) synth.cancel(); // Stop ongoing speech
+  if (synth.speaking) synth.cancel();
   const utter = new SpeechSynthesisUtterance(text);
   synth.speak(utter);
 }
 
 // ----------------------------
-// Greet user with available commands
+// Greet user
 // ----------------------------
 function greetUser() {
   const greeting = `Welcome to WeatherEase Weather page!
@@ -43,7 +43,7 @@ Say:
 }
 
 // ----------------------------
-// Start speech recognition
+// Start voice recognition
 // ----------------------------
 function startRecognition() {
   if (!('webkitSpeechRecognition' in window || 'SpeechRecognition' in window)) {
@@ -70,50 +70,38 @@ function startRecognition() {
   };
 
   recognition.onend = () => {
-    // Keep listening as long as voiceEnabled
-    if (voiceEnabled) recognition.start();
+    if (voiceEnabled) recognition.start(); // auto-restart
   };
 }
 
 // ----------------------------
-// Handle recognized commands
+// Handle commands
 // ----------------------------
 function handleCommand(cmd) {
   if (!weatherDataReady) { 
-    speak("Weather data is not ready yet."); 
+    speak("Weather data is not ready yet. Please wait a moment.");
     return; 
   }
 
   switch(cmd) {
-    case '1': case 'one': case 'temperature': case 'current temperature':
-      speakCurrent('temp'); break;
-    case '2': case 'two': case 'feels like':
-      speakCurrent('feels'); break;
-    case '3': case 'three': case 'condition':
-      speakCurrent('desc'); break;
-    case '4': case 'four': case 'humidity':
-      speakCurrent('humidity'); break;
-    case '5': case 'five': case 'wind':
-      speakCurrent('wind'); break;
-    case '6': case 'six': case 'forecast': case 'five day forecast':
-      speakForecast(); break;
-    case '7': case 'seven': case 'home': case 'return home':
-      speak("Returning home"); homeBtn?.click(); break;
-    default:
-      speak("Command not recognized. Please try again."); break;
+    case '1': case 'one': case 'temperature': case 'current temperature': speakCurrent('temp'); break;
+    case '2': case 'two': case 'feels like': speakCurrent('feels'); break;
+    case '3': case 'three': case 'condition': speakCurrent('desc'); break;
+    case '4': case 'four': case 'humidity': speakCurrent('humidity'); break;
+    case '5': case 'five': case 'wind': speakCurrent('wind'); break;
+    case '6': case 'six': case 'forecast': case 'five day forecast': speakForecast(); break;
+    case '7': case 'seven': case 'home': case 'return home': speak("Returning home"); homeBtn?.click(); break;
+    default: speak("Command not recognized. Please try again."); break;
   }
 }
 
 // ----------------------------
-// Speak individual current weather fields
+// Speak current weather field
 // ----------------------------
 function speakCurrent(field) {
   const el = document.querySelector(`[data-field="${field}"]`);
-  if (el && el.textContent && el.textContent !== '—') {
-    speak(`${field.replace('-', ' ')} is ${el.textContent}`);
-  } else {
-    speak(`${field.replace('-', ' ')} is not available`);
-  }
+  if (el && el.textContent && el.textContent !== '—') speak(`${field.replace('-', ' ')} is ${el.textContent}`);
+  else speak(`${field.replace('-', ' ')} is not available`);
 }
 
 // ----------------------------
@@ -135,31 +123,32 @@ function speakForecast() {
 }
 
 // ----------------------------
-// Enable voice via nav button
+// Enable voice recognition via button
 // ----------------------------
 enableVoiceBtn?.addEventListener('click', () => {
-  voiceEnabled = true;
-  greetUser();
-  startRecognition();
-  enableVoiceBtn.disabled = true;  // prevent re-click
-  enableVoiceBtn.textContent = "Voice Enabled";
+  voiceEnabled = !voiceEnabled;
+  if (voiceEnabled) {
+    enableVoiceBtn.textContent = "Disable Voice";
+    greetUser();
+    startRecognition();
+  } else {
+    enableVoiceBtn.textContent = "Enable Voice";
+    recognition?.stop();
+    if (currentStatus) currentStatus.textContent = "Voice commands disabled.";
+  }
 });
 
 // ----------------------------
-// Speak weather shortly after fetching
+// Set weather data ready flag
+// Call this **after** fetchWeather finishes and forecast is rendered
 // ----------------------------
-function speakWeatherImmediately() {
-  if (!weatherDataReady) return;
-  speakCurrent('temp');
-  speakCurrent('feels');
-  speakCurrent('desc');
-  speakCurrent('humidity');
-  speakCurrent('wind');
+function markWeatherReady() {
+  weatherDataReady = true;
 }
 
 // ----------------------------
-// Hook "Use My Location" button
-// ----------------------------
-geoBtn?.addEventListener('click', () => {
-  setTimeout(() => speakWeatherImmediately(), 2000); // delay for fetch
-});
+// Hook after weather is fetched in your script.js
+// Example: after fetchWeather finishes:
+async function afterWeatherFetch() {
+  markWeatherReady();   // <-- now voice commands can read the data
+}
