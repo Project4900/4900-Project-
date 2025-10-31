@@ -202,3 +202,28 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   });
 });
+
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.register('/service-worker.js')
+    .then(() => console.log('Service Worker registered'))
+    .catch(err => console.error('SW registration failed:', err));
+}
+
+// Offline/online alerts (visual + voice)
+window.addEventListener('offline', () => {
+  const alertEl = document.getElementById('current-status') || document.getElementById('voice-status');
+  if (alertEl) alertEl.textContent = '⚠️ You are offline. Showing cached data.';
+  if (window.speechSynthesis) {
+    const speech = new SpeechSynthesisUtterance('You are offline. Showing cached data.');
+    window.speechSynthesis.speak(speech);
+  }
+});
+
+window.addEventListener('online', () => {
+  const alertEl = document.getElementById('current-status') || document.getElementById('voice-status');
+  if (alertEl) alertEl.textContent = '✅ Back online.';
+  if (window.speechSynthesis) {
+    const speech = new SpeechSynthesisUtterance('You are back online.');
+    window.speechSynthesis.speak(speech);
+  }
+});
