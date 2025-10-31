@@ -245,66 +245,100 @@ button:hover {
     outline-offset: 2px;
 }
 
-/* ========================= */
-/*  Weather Page Specific
+/* =========================
+   WEATHER PAGE SPECIFIC
 ========================= */
-#current {
-    /* Page background image */
+
+/* Full-page background for weather page */
+body.weather-page {
     background-image: url("https://platform.vox.com/wp-content/uploads/sites/2/chorus/uploads/chorus_asset/file/15788040/20150428-cloud-computing.0.1489222360.jpg?quality=90&strip=all&crop=0,5.5555555555556,100,88.888888888889");
     background-size: cover;
     background-position: center;
-    color: #0a0232;
-    padding: 2rem;
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 1.5rem;
+    color: #ffffff; /* text on image */
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    padding: 2rem 1rem;
+    gap: 2rem;
 }
 
-/* Box 1: Current weather fields */
-.weather-info {
-    background: #ffffff;
-    border: 1px solid var(--card-border);
-    border-radius: .75rem;
-    padding: 1.25rem;
-    box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+/* Wrapper for the two blocks */
+.weather-wrapper {
+    display: flex;
+    gap: 2rem;
+    max-width: var(--max-w);
+    width: 100%;
 }
 
-/* Box 2: 5-day forecast */
-.weather-forecast {
-    background: #ffffff;
-    border: 1px solid var(--card-border);
-    border-radius: .75rem;
-    padding: 1.25rem;
-    box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+/* Left box: current weather */
+.current-weather {
+    background: rgba(0,0,0,0.5); /* slightly transparent so image shows through */
+    border-radius: 1rem;
+    padding: 1.5rem;
+    flex: 1;
+    min-width: 250px;
 }
 
-/* Forecast Grid */
+/* Right box: five-day forecast */
+.five-day-forecast {
+    background: rgba(0,0,0,0.5);
+    border-radius: 1rem;
+    padding: 1.5rem;
+    flex: 1;
+    min-width: 250px;
+}
+
+/* Headings for each box */
+.current-weather h2,
+.five-day-forecast h2 {
+    color: #fff;
+    margin-bottom: 1rem;
+    font-size: 1.25rem;
+}
+
+/* List items inside current weather box */
+.current-weather ul {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+
+.current-weather li {
+    background: rgba(255,255,255,0.1);
+    padding: 0.75rem 1rem;
+    border-radius: 0.5rem;
+    color: #fff;
+}
+
+/* Forecast grid */
 #forecast-list {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
-    gap: .75rem;
+    grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+    gap: 0.75rem;
 }
 
 #forecast-list li {
-    background: #ffffff;
+    background: rgba(255,255,255,0.1);
     padding: 1rem;
-    border-radius: .5rem;
+    border-radius: 0.5rem;
     text-align: center;
-    border: 1px solid var(--card-border);
+    color: #fff;
     transition: transform .2s ease, box-shadow .2s ease;
-    color: #01579b;
 }
 
 #forecast-list li:hover {
     transform: translateY(-3px);
-    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+    box-shadow: 0 4px 10px rgba(0,0,0,0.2);
 }
 
-/* Forecast text readability in dark mode */
-body.dark-mode #forecast-list li {
-    background: #1e293b;
-    color: #cbd5e1;
-    border-color: #334155;
+/* Responsive for small screens */
+@media (max-width: 900px) {
+    .weather-wrapper {
+        flex-direction: column;
+        gap: 1.5rem;
+    }
 }
 
 /* ========================= */
