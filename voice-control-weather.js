@@ -13,22 +13,16 @@ let recognition;
 let voiceEnabled = false;
 
 // ----------------------------
-// Speech helper (slower, natural)
+// Speech helper
 // ----------------------------
 function speak(text) {
-  if (!voiceEnabled || !window.speechSynthesis) return;
-  if (window.speechSynthesis.speaking) window.speechSynthesis.cancel();
+  if (!voiceEnabled) return;
+  if (!window.speechSynthesis) return;
 
+  if (window.speechSynthesis.speaking) window.speechSynthesis.cancel();
   const utter = new SpeechSynthesisUtterance(text);
   utter.lang = 'en-US';
-  utter.rate = 0.9;   // slower, more natural
-  utter.pitch = 1;    // calm, natural pitch
-  utter.volume = 1;
-
-  // Optional: pick a preferred voice
-  const voices = window.speechSynthesis.getVoices();
-  utter.voice = voices.find(v => v.lang === 'en-US' && v.name.includes('Google')) || voices[0];
-
+  utter.rate = 0.85; // slower, natural pace
   window.speechSynthesis.speak(utter);
 }
 
@@ -36,12 +30,12 @@ function speak(text) {
 // Greet user when voice enabled
 // ----------------------------
 function greetUser() {
-  const greeting = `Voice commands enabled! You can ask for:
-1: Current temperature
-2: Feels like
-3: Weather condition
-4: 5-day forecast
-5: Return home`;
+  const greeting = `Voice commands enabled! You can ask for:.
+1: Current temperature.
+2: Feels like.
+3: Weather condition.
+4: 5-day forecast.
+5: Return home.`;
   speak(greeting);
   if (currentStatus) currentStatus.textContent = "Voice commands active. Awaiting your instruction...";
 }

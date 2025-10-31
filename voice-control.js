@@ -12,22 +12,13 @@ window.addEventListener('DOMContentLoaded', () => {
     let voiceEnabled = false;
 
     // ----------------------------
-    // Speak text (slower, natural)
+    // Speak text
     // ----------------------------
     function speak(text) {
-        if(!voiceEnabled || !synth) return;
+        if(!voiceEnabled) return;
         if (synth.speaking) synth.cancel();
-
         const utter = new SpeechSynthesisUtterance(text);
-        utter.lang = 'en-US';
-        utter.rate = 0.9;   // slower, natural rate
-        utter.pitch = 1;    // calm pitch
-        utter.volume = 1;
-
-        // Optional: choose a preferred voice if available
-        const voices = synth.getVoices();
-        utter.voice = voices.find(v => v.lang === 'en-US' && v.name.includes('Google')) || voices[0];
-
+        utter.rate = 0.85; // slower, natural
         synth.speak(utter);
     }
 
@@ -35,12 +26,21 @@ window.addEventListener('DOMContentLoaded', () => {
     // Greet user
     // ----------------------------
     function greetUser() {
-        const greeting = `Welcome to WeatherEase!
-        Say 1: Weather
-        Say 2: Settings
-        Say 9: Exit`;
-        speak(greeting);
-        voiceStatus.textContent = "Awaiting voice command...";
+        const lines = [
+            "Welcome to WeatherEase!",
+            "You can choose from the following options.",
+            "Option 1: Weather.",
+            "Option 2: Settings.",
+            "Option 9: Exit."
+        ];
+
+        lines.forEach(line => {
+            const utter = new SpeechSynthesisUtterance(line);
+            utter.rate = 0.85;
+            synth.speak(utter);
+        });
+
+        if (voiceStatus) voiceStatus.textContent = "Awaiting voice command...";
     }
 
     // ----------------------------
@@ -57,11 +57,12 @@ window.addEventListener('DOMContentLoaded', () => {
         recognition.lang = 'en-US';
         recognition.interimResults = false;
         recognition.maxAlternatives = 1;
+        recognition.continuous = true;
 
         recognition.start();
 
         recognition.onresult = (event) => {
-            const command = event.results[0][0].transcript.trim().toLowerCase();
+            const command = event.results[event.results.length-1][0].transcript.trim().toLowerCase();
             handleVoiceCommand(command);
         };
 
@@ -81,15 +82,15 @@ window.addEventListener('DOMContentLoaded', () => {
         switch(cmd) {
             case '1': case 'one': case 'get weather': case 'weather':
                 speak("Opening Weather page");
-                window.location.href = "weather.html";
+                setTimeout(() => window.location.href = "weather.html", 500);
                 break;
             case '2': case 'two': case 'settings':
                 speak("Opening Settings page");
-                window.location.href = "settings.html";
+                setTimeout(() => window.location.href = "settings.html", 500);
                 break;
             case '9': case 'nine': case 'exit':
                 speak("Exiting app");
-                window.location.href = "exit.html";
+                setTimeout(() => window.location.href = "exit.html", 500);
                 break;
             default:
                 speak("Command not recognized, please try again.");
