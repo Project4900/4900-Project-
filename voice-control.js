@@ -12,12 +12,22 @@ window.addEventListener('DOMContentLoaded', () => {
     let voiceEnabled = false;
 
     // ----------------------------
-    // Speak text
+    // Speak text (slower, natural)
     // ----------------------------
     function speak(text) {
-        if(!voiceEnabled) return;
+        if(!voiceEnabled || !synth) return;
         if (synth.speaking) synth.cancel();
+
         const utter = new SpeechSynthesisUtterance(text);
+        utter.lang = 'en-US';
+        utter.rate = 0.9;   // slower, natural rate
+        utter.pitch = 1;    // calm pitch
+        utter.volume = 1;
+
+        // Optional: choose a preferred voice if available
+        const voices = synth.getVoices();
+        utter.voice = voices.find(v => v.lang === 'en-US' && v.name.includes('Google')) || voices[0];
+
         synth.speak(utter);
     }
 
@@ -101,4 +111,3 @@ window.addEventListener('DOMContentLoaded', () => {
         startVoiceBtn.style.display = "none";
     });
 });
-

@@ -13,15 +13,22 @@ let recognition;
 let voiceEnabled = false;
 
 // ----------------------------
-// Speech helper
+// Speech helper (slower, natural)
 // ----------------------------
 function speak(text) {
-  if (!voiceEnabled) return;
-  if (!window.speechSynthesis) return;
-
+  if (!voiceEnabled || !window.speechSynthesis) return;
   if (window.speechSynthesis.speaking) window.speechSynthesis.cancel();
+
   const utter = new SpeechSynthesisUtterance(text);
   utter.lang = 'en-US';
+  utter.rate = 0.9;   // slower, more natural
+  utter.pitch = 1;    // calm, natural pitch
+  utter.volume = 1;
+
+  // Optional: pick a preferred voice
+  const voices = window.speechSynthesis.getVoices();
+  utter.voice = voices.find(v => v.lang === 'en-US' && v.name.includes('Google')) || voices[0];
+
   window.speechSynthesis.speak(utter);
 }
 
