@@ -88,18 +88,18 @@ function handleCommand(cmd) {
     case 'one':
     case 'temperature':
     case 'current temperature':
-      speakField('temp');
+      speakField('temperautre');
       break;
     case '2':
     case 'two':
     case 'feels like':
-      speakField('feels');
+      speakField('feels like');
       break;
     case '3':
     case 'three':
     case 'condition':
     case 'weather':
-      speakField('desc');
+      speakField('current condition');
       break;
     case '4':
     case 'four':

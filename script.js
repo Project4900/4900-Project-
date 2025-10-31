@@ -101,9 +101,9 @@ async function fetchWeather(lat, lon, units = 'metric') {
 
     // Update DOM with current weather
     setField('place', `${current.name || ''}${current.sys?.country ? ', ' + current.sys.country : ''}`);
-    setField('temp', current?.main?.temp !== undefined ? `${Math.round(current.main.temp)}${unitSymbol}` : '—');
-    setField('feels', current?.main?.feels_like !== undefined ? `${Math.round(current.main.feels_like)}${unitSymbol}` : '—');
-    setField('desc', current?.weather?.[0]?.description ?? '—');
+    setField('temperature', current?.main?.temp !== undefined ? `${Math.round(current.main.temp)}${unitSymbol}` : '—');
+    setField('feels like', current?.main?.feels_like !== undefined ? `${Math.round(current.main.feels_like)}${unitSymbol}` : '—');
+    setField('current condition', current?.weather?.[0]?.description ?? '—');
     setField('humidity', current?.main?.humidity !== undefined ? `${current.main.humidity}%` : '—');
     setField('wind', current?.wind?.speed !== undefined ? `${Math.round(current.wind.speed)} ${windUnit}` : '—');
 
