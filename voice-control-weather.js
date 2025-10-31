@@ -30,12 +30,12 @@ function speak(text) {
 // Greet user when voice enabled
 // ----------------------------
 function greetUser() {
-  const greeting = `Voice commands enabled! You can ask for:.
-1: Current temperature.
-2: Feels like.
-3: Weather condition.
-4: 5-day forecast.
-5: Return home.`;
+  const greeting = `Voice commands enabled! 
+Option 1: Temperature.
+Option 2: Feels like.
+Option 3: Weather condition.
+Option 4: 5-day forecast.
+Option 5: Return home.`;
   speak(greeting);
   if (currentStatus) currentStatus.textContent = "Voice commands active. Awaiting your instruction...";
 }
@@ -110,7 +110,8 @@ function handleCommand(cmd) {
     case 'home':
     case 'return home':
       speak("Returning home");
-      document.getElementById('home-btn')?.click();
+      // Explicitly go to index.html
+      window.location.href = "index.html";
       break;
     default:
       speak("Command not recognized. Please try again.");
