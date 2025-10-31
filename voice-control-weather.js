@@ -35,7 +35,9 @@ Option 1: Temperature.
 Option 2: Feels like.
 Option 3: Weather condition.
 Option 4: 5-day forecast.
-Option 5: Return home.`;
+Option 5: Humidity.
+Option 6: Wind.
+Option 7: Return home.`;
   speak(greeting);
   if (currentStatus) currentStatus.textContent = "Voice commands active. Awaiting your instruction...";
 }
@@ -107,6 +109,16 @@ function handleCommand(cmd) {
       break;
     case '5':
     case 'five':
+    case 'humidity':
+      speakField('humidity');
+      break;
+    case '6':
+    case 'six':
+    case 'wind':
+      speakField('wind');
+      break;
+    case '7':
+    case 'seven':
     case 'home':
     case 'return home':
       speak("Returning home");
