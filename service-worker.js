@@ -1,5 +1,5 @@
 const CACHE_NAME = 'weatherease-v1';
-const FILES_TO_CACHE = [
+const ASSETS_TO_CACHE = [
   '/',
   '/index.html',
   '/weather.html',
@@ -14,44 +14,46 @@ const FILES_TO_CACHE = [
   '/icons/weather-512.png'
 ];
 
-// Install SW and cache static files
+// Install: cache app shell
 self.addEventListener('install', event => {
   event.waitUntil(
-    caches.open(CACHE_NAME).then(cache => cache.addAll(FILES_TO_CACHE))
+    caches.open(CACHE_NAME).then(cache => cache.addAll(ASSETS_TO_CACHE))
   );
   self.skipWaiting();
 });
 
-// Activate SW and remove old caches
+// Activate: clean old caches
 self.addEventListener('activate', event => {
   event.waitUntil(
-    caches.keys().then(keys => Promise.all(
-      keys.map(key => key !== CACHE_NAME && caches.delete(key))
-    ))
+    caches.keys().then(keys =>
+      Promise.all(keys.map(key => {
+        if (key !== CACHE_NAME) return caches.delete(key);
+      }))
+    )
   );
   self.clients.claim();
 });
 
-// Intercept fetch requests
+// Fetch: cache-first strategy for app files, network-first for API
 self.addEventListener('fetch', event => {
-  const requestUrl = new URL(event.request.url);
+  const url = new URL(event.request.url);
 
-  // Cache API responses dynamically
-  if (requestUrl.hostname.includes('openweathermap.org')) {
+  // OpenWeatherMap API requests
+  if (url.hostname.includes('api.openweathermap.org')) {
     event.respondWith(
-      caches.open(CACHE_NAME).then(cache =>
-        fetch(event.request)
-          .then(response => {
-            cache.put(event.request, response.clone());
-            return response;
-          })
-          .catch(() => caches.match(event.request))
-      )
+      fetch(event.request)
+        .then(resp => {
+          const clonedResp = resp.clone();
+          caches.open(CACHE_NAME).then(cache => cache.put(event.request, clonedResp));
+          return resp;
+        })
+        .catch(() => caches.match(event.request))
     );
-  } else {
-    // Static assets: cache first
-    event.respondWith(
-      caches.match(event.request).then(response => response || fetch(event.request))
-    );
+    return;
   }
+
+  // Other requests: cache-first
+  event.respondWith(
+    caches.match(event.request).then(cached => cached || fetch(event.request))
+  );
 });
