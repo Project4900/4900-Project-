@@ -7,34 +7,33 @@ document.addEventListener('DOMContentLoaded', () => {
   const bigText = document.getElementById('big-text');
   const highContrast = document.getElementById('high-contrast');
   const voiceCheckbox = document.getElementById('voice');
-  const tempUnit = document.getElementById('temp-unit');
+  const unitsSelect = document.getElementById('units-select');
   const voiceSelect = document.getElementById('voice-select');
-  const speechRate = document.getElementById('speech-rate');
-  const speechPitch = document.getElementById('speech-pitch');
+  const speechRate = document.getElementById('voice-rate');
+  const speechPitch = document.getElementById('voice-pitch');
   const rateDisplay = document.getElementById('rate-display');
   const pitchDisplay = document.getElementById('pitch-display');
   const previewBtn = document.getElementById('preview-voice');
+  const statusDiv = document.getElementById('voice-status');
 
   // ----------------------------
   // Load saved preferences
   // ----------------------------
   function loadSettings() {
-    if (localStorage.getItem('darkMode') === 'true') {
-      darkMode.checked = true;
-      document.body.classList.add('dark-mode');
-    }
-    if (localStorage.getItem('bigText') === 'true') {
-      bigText.checked = true;
-      document.documentElement.style.fontSize = '18px';
-    }
-    if (localStorage.getItem('highContrast') === 'true') {
-      highContrast.checked = true;
-      document.body.style.filter = 'contrast(1.2)';
-    }
+    // Accessibility
+    darkMode.checked = localStorage.getItem('darkMode') === 'true';
+    bigText.checked = localStorage.getItem('bigText') === 'true';
+    highContrast.checked = localStorage.getItem('highContrast') === 'true';
     voiceCheckbox.checked = localStorage.getItem('voiceEnabled') === 'true';
-    tempUnit.value = localStorage.getItem('tempUnit') || 'metric';
-    speechRate.value = localStorage.getItem('speechRate') || 1;
-    speechPitch.value = localStorage.getItem('speechPitch') || 1;
+    unitsSelect.value = localStorage.getItem('units') || 'metric';
+
+    if (darkMode.checked) document.body.classList.add('dark-mode');
+    if (bigText.checked) document.documentElement.style.fontSize = '18px';
+    if (highContrast.checked) document.body.style.filter = 'contrast(1.2)';
+
+    // Voice
+    speechRate.value = parseFloat(localStorage.getItem('speechRate')) || 1;
+    speechPitch.value = parseFloat(localStorage.getItem('speechPitch')) || 1;
     rateDisplay.textContent = speechRate.value;
     pitchDisplay.textContent = speechPitch.value;
   }
@@ -63,40 +62,40 @@ document.addEventListener('DOMContentLoaded', () => {
     localStorage.setItem('voiceEnabled', voiceCheckbox.checked);
   });
 
-  // ----------------------------
-  // Temperature unit
-  // ----------------------------
-  tempUnit.addEventListener('change', () => {
-    localStorage.setItem('tempUnit', tempUnit.value);
+  unitsSelect.addEventListener('change', () => {
+    localStorage.setItem('units', unitsSelect.value);
   });
 
   // ----------------------------
-  // Speech synthesis voices
+  // Populate voices
   // ----------------------------
   function populateVoices() {
     const voices = speechSynthesis.getVoices();
+    if (!voices.length) return;
+
     voiceSelect.innerHTML = '';
     voices.forEach(v => {
       const opt = document.createElement('option');
       opt.value = v.name;
       opt.textContent = `${v.name} (${v.lang})`;
-      if (v.name === localStorage.getItem('preferredVoice')) opt.selected = true;
+      if (v.name === localStorage.getItem('voiceName')) opt.selected = true;
       voiceSelect.appendChild(opt);
     });
   }
 
   populateVoices();
-  if (speechSynthesis.onvoiceschanged !== undefined) {
-    speechSynthesis.onvoiceschanged = populateVoices;
+  if ('speechSynthesis' in window) {
+    window.speechSynthesis.onvoiceschanged = populateVoices;
   }
 
+  // ----------------------------
+  // Save voice settings
+  // ----------------------------
   voiceSelect.addEventListener('change', () => {
-    localStorage.setItem('preferredVoice', voiceSelect.value);
+    localStorage.setItem('voiceName', voiceSelect.value);
+    if (statusDiv) statusDiv.textContent = `Voice set to ${voiceSelect.value}`;
   });
 
-  // ----------------------------
-  // Speech rate & pitch
-  // ----------------------------
   speechRate.addEventListener('input', () => {
     rateDisplay.textContent = speechRate.value;
     localStorage.setItem('speechRate', speechRate.value);
@@ -119,3 +118,4 @@ document.addEventListener('DOMContentLoaded', () => {
     speechSynthesis.speak(utter);
   });
 });
+

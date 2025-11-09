@@ -9,7 +9,7 @@ window.addEventListener('DOMContentLoaded', () => {
     const voiceStatus = document.getElementById('voice-status');
     const synth = window.speechSynthesis;
     let recognition;
-    let voiceEnabled = false;
+    let voiceEnabled = localStorage.getItem('voiceEnabled') === 'true';
 
     // ----------------------------
     // Get user voice settings
@@ -26,7 +26,7 @@ window.addEventListener('DOMContentLoaded', () => {
     // Speak text using user preferences
     // ----------------------------
     function speak(text) {
-        if(!voiceEnabled) return;
+        if (!voiceEnabled) return;
         if (synth.speaking) synth.cancel();
         const utter = new SpeechSynthesisUtterance(text);
         const { voice, rate, pitch } = getUserVoiceSettings();
@@ -40,6 +40,7 @@ window.addEventListener('DOMContentLoaded', () => {
     // Greet user
     // ----------------------------
     function greetUser() {
+        if (!voiceEnabled) return;
         const lines = [
             "Welcome to WeatherEase!",
             "You can choose from the following options.",
@@ -56,7 +57,7 @@ window.addEventListener('DOMContentLoaded', () => {
     // ----------------------------
     function startVoiceRecognition() {
         if (!('webkitSpeechRecognition' in window || 'SpeechRecognition' in window)) {
-            voiceStatus.textContent = "Voice commands not supported in this browser.";
+            if (voiceStatus) voiceStatus.textContent = "Voice commands not supported in this browser.";
             return;
         }
         const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
@@ -68,12 +69,12 @@ window.addEventListener('DOMContentLoaded', () => {
         recognition.start();
 
         recognition.onresult = (event) => {
-            const command = event.results[event.results.length-1][0].transcript.trim().toLowerCase();
+            const command = event.results[event.results.length - 1][0].transcript.trim().toLowerCase();
             handleVoiceCommand(command);
         };
 
         recognition.onerror = (event) => {
-            voiceStatus.textContent = `Error: ${event.error}`;
+            if (voiceStatus) voiceStatus.textContent = `Error: ${event.error}`;
         };
 
         recognition.onend = () => {
@@ -112,10 +113,20 @@ window.addEventListener('DOMContentLoaded', () => {
 
     startVoiceBtn?.addEventListener('click', () => {
         voiceEnabled = true;
+        localStorage.setItem('voiceEnabled', true);
         speak("Voice features enabled!");
         startVoiceRecognition();
         greetUser();
         startVoiceBtn.style.display = "none";
     });
+
+    // ----------------------------
+    // Auto-start voice if enabled
+    // ----------------------------
+    if (voiceEnabled) {
+        startVoiceBtn?.style.display = "none";
+        startVoiceRecognition();
+        greetUser();
+    }
 });
 
