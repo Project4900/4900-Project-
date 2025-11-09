@@ -10,7 +10,7 @@
 <header>
   <h1>WeatherEase</h1>
   <nav>
-    <ul style="display:flex; align-items:center; gap:1rem; list-style:none; padding:0; margin:0;">
+    <ul>
       <li><a href="index.html">Home</a></li>
       <li><a href="settings.html">Settings</a></li>
       <li><a href="exit.html">Exit</a></li>
@@ -19,14 +19,15 @@
   </nav>
 </header>
 
-  <main>
-    <!-- Current conditions -->
-    <section id="current">
+<main class="weather-container">
+
+  <div class="weather-cards">
+    <!-- Left Card: Current Conditions -->
+    <section class="card current-card">
       <h2>Current Conditions</h2>
-      <form id="location-form" style="display:flex; gap:.5rem; flex-wrap:wrap;">
+      <form id="location-form">
         <input id="search" type="search" placeholder="City or ZIP"/>
         <button type="button" id="geo-btn">Use My Location</button>
-        <!-- Removed Get Temp button -->
       </form>
 
       <div id="current-card">
@@ -38,24 +39,69 @@
         <p><strong>Wind:</strong> <span data-field="wind">—</span></p>
       </div>
 
-      <div id="current-status" aria-live="polite" style="opacity:.8;">Ready.</div>
+      <div id="current-status" aria-live="polite">Ready.</div>
+    </section>
 
-    <!-- Forecast -->
-    <section id="forecast">
+    <!-- Right Card: 5-Day Forecast -->
+    <section class="card forecast-card">
       <h2>5-Day Forecast</h2>
-      <ul id="forecast-list" style="display:grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap:.75rem; list-style:none; padding:0;">
-        <li class="day" aria-label="Day 1"><strong data-day>—</strong><br><span data-high>—</span> / <span data-low>—</span><br><span data-desc>—</span></li>
-        <li class="day" aria-label="Day 2"><strong data-day>—</strong><br><span data-high>—</span> / <span data-low>—</span><br><span data-desc>—</span></li>
-        <li class="day" aria-label="Day 3"><strong data-day>—</strong><br><span data-high>—</span> / <span data-low>—</span><br><span data-desc>—</span></li>
-        <li class="day" aria-label="Day 4"><strong data-day>—</strong><br><span data-high>—</span> / <span data-low>—</span><br><span data-desc>—</span></li>
-        <li class="day" aria-label="Day 5"><strong data-day>—</strong><br><span data-high>—</span> / <span data-low>—</span><br><span data-desc>—</span></li>
+      <ul id="forecast-list">
+        <li class="day" aria-label="Day 1">
+          <strong data-day>—</strong>
+          <span data-high>—</span> /
+          <span data-low>—</span><br>
+          <span data-desc>—</span>
+        </li>
+        <li class="day" aria-label="Day 2">
+          <strong data-day>—</strong>
+          <span data-high>—</span> /
+          <span data-low>—</span><br>
+          <span data-desc>—</span>
+        </li>
+        <li class="day" aria-label="Day 3">
+          <strong data-day>—</strong>
+          <span data-high>—</span> /
+          <span data-low>—</span><br>
+          <span data-desc>—</span>
+        </li>
+        <li class="day" aria-label="Day 4">
+          <strong data-day>—</strong>
+          <span data-high>—</span> /
+          <span data-low>—</span><br>
+          <span data-desc>—</span>
+        </li>
+        <li class="day" aria-label="Day 5">
+          <strong data-day>—</strong>
+          <span data-high>—</span> /
+          <span data-low>—</span><br>
+          <span data-desc>—</span>
+        </li>
       </ul>
     </section>
+<<<<<<< HEAD
   </main>
+=======
+  </div>
 
-  <!-- Scripts -->
-  <script src="voice-control-weather.js"></script>
-  <script src="script.js"></script>
+  <!-- Bottom Card: Chat / AI Assistant -->
+  <section class="card chat-card" aria-label="AI Weather Assistant">
+    <h2>Ask a question</h2>
+    <div id="chat-log" class="chat-log"></div>
+
+    <form id="chat-form">
+      <input id="chat-input" type="text" placeholder="Ask me about the weather..." autocomplete="off">
+      <button type="submit">Send</button>
+    </form>
+  </section>
+</main>
+>>>>>>> 66a9695096f0d6b14dcfc737236b4fac8f25b65b
+
+<!-- Scripts -->
+<script src="voice-control-weather.js"></script>
+<script src="script.js"></script>
 </body>
 </html>
+<<<<<<< HEAD
 
+=======
+>>>>>>> 66a9695096f0d6b14dcfc737236b4fac8f25b65b
