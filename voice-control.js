@@ -1,5 +1,5 @@
 // =========================
-// Home Page Voice + Button Navigation (fixed sequential speech)
+// Home Page Voice + Button Navigation (Always-visible, sequential speech)
 // =========================
 
 window.addEventListener('DOMContentLoaded', () => {
@@ -16,16 +16,16 @@ window.addEventListener('DOMContentLoaded', () => {
     // Get user voice settings
     // ----------------------------
     function getUserVoiceSettings() {
-        const name = localStorage.getItem('voiceName'); 
+        const name = localStorage.getItem('voiceName');
         const rate = parseFloat(localStorage.getItem('speechRate') || 1);
         const pitch = parseFloat(localStorage.getItem('speechPitch') || 1);
         const voices = synth.getVoices();
-        let voice = voices.find(v => v.name === name) || voices[0];
+        const voice = voices.find(v => v.name === name) || voices[0];
         return { voice, rate, pitch };
     }
 
     // ----------------------------
-    // Speak text using user preferences
+    // Speak text
     // ----------------------------
     function speak(text, cancelBefore = true) {
         if (!voiceEnabled) return;
@@ -39,7 +39,7 @@ window.addEventListener('DOMContentLoaded', () => {
     }
 
     // ----------------------------
-    // Speak multiple lines in order
+    // Speak multiple lines sequentially
     // ----------------------------
     function speakSequence(lines) {
         if (!voiceEnabled) return;
@@ -63,7 +63,7 @@ window.addEventListener('DOMContentLoaded', () => {
     }
 
     // ----------------------------
-    // Greet user (now speaks all lines)
+    // Greet user
     // ----------------------------
     function greetUser() {
         const lines = [
@@ -137,12 +137,15 @@ window.addEventListener('DOMContentLoaded', () => {
     if (exitBtn) exitBtn.addEventListener('click', () => window.location.href = "exit.html");
 
     if (startVoiceBtn) startVoiceBtn.addEventListener('click', () => {
-        voiceEnabled = true;
-        localStorage.setItem('voiceEnabled', true);
-        speak("Voice features enabled!");
-        startVoiceRecognition();
-        greetUser();
-        startVoiceBtn.style.display = "none";
+        if (!voiceEnabled) {
+            voiceEnabled = true;
+            localStorage.setItem('voiceEnabled', true);
+            speak("Voice features enabled!");
+            startVoiceRecognition();
+            greetUser();
+        } else {
+            speak("Voice commands already enabled.");
+        }
     });
 
     // ----------------------------
@@ -150,10 +153,9 @@ window.addEventListener('DOMContentLoaded', () => {
     // ----------------------------
     if (localStorage.getItem('voiceEnabled') === 'true') {
         voiceEnabled = true;
-        speak("Voice features enabled!");
         startVoiceRecognition();
         greetUser();
-        if (startVoiceBtn) startVoiceBtn.style.display = "none";
     }
 });
+
 

@@ -11,7 +11,7 @@
   <style>
     /* Home page specific button styling */
     .home-button {
-      background: rgba(0,173,255,0.8);
+      background: #001156;
       border: 1px solid rgba(255,255,255,0.3);
       border-radius: 999px;
       padding: 0.8rem 1.5rem;
@@ -28,8 +28,37 @@
     }
 
     .home-button:hover {
-      background: rgba(0,173,255,1);
+      background: #0b47c1;
       transform: translateY(-2px);
+    }
+
+    /* Voice button matches other buttons */
+    #start-voice-btn {
+      background: #001156;
+      border: 1px solid rgba(255,255,255,0.3);
+      border-radius: 999px;
+      padding: 0.8rem 1.5rem;
+      font-size: 1rem;
+      color: #fff;
+      cursor: pointer;
+      transition: background 0.25s ease, transform 0.15s ease;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-weight: 600;
+      margin-top: 2rem;
+    }
+
+    #start-voice-btn:hover {
+      background: #0b47c1;
+      transform: translateY(-2px);
+    }
+
+    #voice-status {
+      margin-top: 0.75rem;
+      font-size: 0.9rem;
+      opacity: 0.85;
+      color: #fff;
     }
   </style>
 </head>
@@ -38,17 +67,18 @@
     <div class="home-container">
       <h2>Welcome to WeatherEase!</h2>
       <p>Get instant weather updates and forecasts easily.</p>
+
       <div style="margin-top:2rem; display:flex; justify-content:center; gap:1rem; flex-wrap:wrap;">
         <button id="weather-btn" class="home-button">🌤️ Weather</button>
         <button id="settings-btn" class="home-button">⚙️ Settings</button>
         <button id="exit-btn" class="home-button">❌ Exit</button>
       </div>
 
-      <button id="start-voice-btn" style="margin-top:2rem; padding:0.8rem 1.5rem; border-radius:999px; cursor:pointer;">
-        🎤 Enable Voice Commands
-      </button>
-      <p id="voice-status" style="margin-top:0.75rem; font-size:0.9rem; opacity:0.85;"></p>
+      <!-- Always visible -->
+      <button id="start-voice-btn">🎤 Enable Voice Commands</button>
+      <p id="voice-status"></p>
     </div>
   </main>
 </body>
 </html>
+
