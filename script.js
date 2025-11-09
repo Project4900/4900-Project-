@@ -17,6 +17,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const big = document.getElementById('big-text');
   const contrast = document.getElementById('high-contrast');
   const status = document.getElementById('current-status');
+  const unitsSelect = document.getElementById('units-select'); // <-- NEW
 
   // ----------------------------
   // Persist dark mode
@@ -45,10 +46,18 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 
   // ----------------------------
-  // Units helper (locked to metric)
+  // Units helper
   // ----------------------------
   function getUnits() {
-    return 'metric';
+    return localStorage.getItem('units') || 'metric';
+  }
+
+  if (unitsSelect) {
+    unitsSelect.value = getUnits();
+    unitsSelect.addEventListener('change', () => {
+      localStorage.setItem('units', unitsSelect.value);
+      if (status) status.textContent = `Units set to ${unitsSelect.value}`;
+    });
   }
 
   // ----------------------------
@@ -62,69 +71,68 @@ document.addEventListener('DOMContentLoaded', () => {
   // ----------------------------
   // Fetch current weather + 5-day forecast
   // ----------------------------
-async function fetchWeather(lat, lon, units = 'metric') {
-  try {
-    window.weatherDataReady = false;
-    if (status) status.textContent = 'Fetching weather data…';
-
-    const currentUrl = `${PRO_ENDPOINT}/weather?lat=${lat}&lon=${lon}&units=${units}&appid=${API_KEY}`;
-    const forecastUrl = `${PRO_ENDPOINT}/forecast?lat=${lat}&lon=${lon}&units=${units}&appid=${API_KEY}`;
-
-    let current, forecast;
-
-    // Try fetching current weather
+  async function fetchWeather(lat, lon, units = getUnits()) {
     try {
-      const currentResp = await fetch(currentUrl);
-      if (!currentResp.ok) throw new Error("Current weather request failed");
-      current = await currentResp.json();
-      localStorage.setItem('lastWeatherCurrent', JSON.stringify(current));
-    } catch {
-      const cached = localStorage.getItem('lastWeatherCurrent');
-      if (cached) current = JSON.parse(cached);
-      else throw new Error("No cached weather data available");
+      window.weatherDataReady = false;
+      if (status) status.textContent = 'Fetching weather data…';
+
+      const currentUrl = `${PRO_ENDPOINT}/weather?lat=${lat}&lon=${lon}&units=${units}&appid=${API_KEY}`;
+      const forecastUrl = `${PRO_ENDPOINT}/forecast?lat=${lat}&lon=${lon}&units=${units}&appid=${API_KEY}`;
+
+      let current, forecast;
+
+      // Try fetching current weather
+      try {
+        const currentResp = await fetch(currentUrl);
+        if (!currentResp.ok) throw new Error("Current weather request failed");
+        current = await currentResp.json();
+        localStorage.setItem('lastWeatherCurrent', JSON.stringify(current));
+      } catch {
+        const cached = localStorage.getItem('lastWeatherCurrent');
+        if (cached) current = JSON.parse(cached);
+        else throw new Error("No cached weather data available");
+      }
+
+      // Try fetching forecast
+      try {
+        const forecastResp = await fetch(forecastUrl);
+        if (!forecastResp.ok) throw new Error("Forecast request failed");
+        forecast = await forecastResp.json();
+        localStorage.setItem('lastWeatherForecast', JSON.stringify(forecast));
+      } catch {
+        const cached = localStorage.getItem('lastWeatherForecast');
+        if (cached) forecast = JSON.parse(cached);
+        else throw new Error("No cached forecast data available");
+      }
+
+      const unitSymbol = units === 'imperial' ? '°F' : '°C';
+      const windUnit = units === 'imperial' ? 'mph' : 'm/s';
+
+      // Update DOM with current weather
+      setField('place', `${current.name || ''}${current.sys?.country ? ', ' + current.sys.country : ''}`);
+      setField('temperature', current?.main?.temp !== undefined ? `${Math.round(current.main.temp)}${unitSymbol}` : '—');
+      setField('feels like', current?.main?.feels_like !== undefined ? `${Math.round(current.main.feels_like)}${unitSymbol}` : '—');
+      setField('current condition', current?.weather?.[0]?.description ?? '—');
+      setField('humidity', current?.main?.humidity !== undefined ? `${current.main.humidity}%` : '—');
+      setField('wind', current?.wind?.speed !== undefined ? `${Math.round(current.wind.speed)} ${windUnit}` : '—');
+
+      // Update forecast
+      renderForecast(forecast, units);
+
+      if (status) status.textContent = 'Weather updated successfully.';
+      window.weatherDataReady = true;
+
+    } catch (err) {
+      console.error(err);
+      window.weatherDataReady = false;
+      if (status) status.textContent = 'Unable to fetch weather. Showing cached data if available.';
     }
-
-    // Try fetching forecast
-    try {
-      const forecastResp = await fetch(forecastUrl);
-      if (!forecastResp.ok) throw new Error("Forecast request failed");
-      forecast = await forecastResp.json();
-      localStorage.setItem('lastWeatherForecast', JSON.stringify(forecast));
-    } catch {
-      const cached = localStorage.getItem('lastWeatherForecast');
-      if (cached) forecast = JSON.parse(cached);
-      else throw new Error("No cached forecast data available");
-    }
-
-    const unitSymbol = units === 'imperial' ? '°F' : '°C';
-    const windUnit = units === 'imperial' ? 'mph' : 'm/s';
-
-    // Update DOM with current weather
-    setField('place', `${current.name || ''}${current.sys?.country ? ', ' + current.sys.country : ''}`);
-    setField('temperature', current?.main?.temp !== undefined ? `${Math.round(current.main.temp)}${unitSymbol}` : '—');
-    setField('feels like', current?.main?.feels_like !== undefined ? `${Math.round(current.main.feels_like)}${unitSymbol}` : '—');
-    setField('current condition', current?.weather?.[0]?.description ?? '—');
-    setField('humidity', current?.main?.humidity !== undefined ? `${current.main.humidity}%` : '—');
-    setField('wind', current?.wind?.speed !== undefined ? `${Math.round(current.wind.speed)} ${windUnit}` : '—');
-
-    // Update forecast
-    renderForecast(forecast, units);
-
-    if (status) status.textContent = 'Weather updated successfully.';
-    window.weatherDataReady = true;
-
-  } catch (err) {
-    console.error(err);
-    window.weatherDataReady = false;
-    if (status) status.textContent = 'Unable to fetch weather. Showing cached data if available.';
   }
-}
-
 
   // ----------------------------
   // Render 5-day forecast
   // ----------------------------
-  function renderForecast(forecast, units = 'metric') {
+  function renderForecast(forecast, units = getUnits()) {
     if (!forecast?.list?.length) return;
 
     const tzOffsetSec = forecast?.city?.timezone ?? 0;
@@ -213,13 +221,18 @@ async function fetchWeather(lat, lon, units = 'metric') {
   });
 });
 
+// ----------------------------
+// Service Worker
+// ----------------------------
 if ('serviceWorker' in navigator) {
   navigator.serviceWorker.register('/service-worker.js')
     .then(() => console.log('Service Worker registered'))
     .catch(err => console.error('SW registration failed:', err));
 }
 
+// ----------------------------
 // Offline/online alerts (visual + voice)
+// ----------------------------
 window.addEventListener('offline', () => {
   const alertEl = document.getElementById('current-status') || document.getElementById('voice-status');
   if (alertEl) alertEl.textContent = '⚠️ You are offline. Showing cached data.';

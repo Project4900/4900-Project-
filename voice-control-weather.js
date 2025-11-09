@@ -4,22 +4,13 @@
 
 console.log("Voice Control loaded");
 
-// ----------------------------
-// DOM Elements
-// ----------------------------
 const enableVoiceBtn = document.getElementById('enable-voice-btn');
 const currentStatus = document.getElementById('current-status');
 
-// ----------------------------
-// Voice recognition variables
-// ----------------------------
 let recognition;
 let voiceEnabled = false;
 
-// ----------------------------
-// Speech settings
-// ----------------------------
-let selectedVoiceName = localStorage.getItem('voiceName') || null;
+let selectedVoiceName = localStorage.getItem('preferredVoice') || null;
 let speechRate = parseFloat(localStorage.getItem('speechRate')) || 0.85;
 let speechPitch = parseFloat(localStorage.getItem('speechPitch')) || 1;
 let selectedVoice = null;
@@ -34,9 +25,9 @@ function populateVoice() {
     if (selectedVoiceName) {
         selectedVoice = voices.find(v => v.name === selectedVoiceName) || voices[0];
     } else {
-        selectedVoice = voices[0]; // default first voice
+        selectedVoice = voices[0];
         selectedVoiceName = selectedVoice.name;
-        localStorage.setItem('voiceName', selectedVoiceName);
+        localStorage.setItem('preferredVoice', selectedVoiceName);
     }
 }
 
@@ -49,8 +40,7 @@ if ('speechSynthesis' in window) {
 // Speak helper
 // ----------------------------
 function speak(text) {
-    if (!voiceEnabled) return;
-    if (!window.speechSynthesis) return;
+    if (!voiceEnabled || !window.speechSynthesis) return;
 
     if (window.speechSynthesis.speaking) window.speechSynthesis.cancel();
 
@@ -156,24 +146,7 @@ function speakField(field) {
     if (el && el.textContent && el.textContent !== '—') {
         speak(`${field.replace('-', ' ')} is ${el.textContent}`);
     } else {
-        // fallback to cached version
-        if ('caches' in window) {
-            caches.match(window.location.href).then(response => {
-                if (!response) return;
-                response.text().then(html => {
-                    const parser = new DOMParser();
-                    const doc = parser.parseFromString(html, 'text/html');
-                    const cachedEl = doc.querySelector(`[data-field="${field}"]`);
-                    if (cachedEl && cachedEl.textContent) {
-                        speak(`${field.replace('-', ' ')} (cached) is ${cachedEl.textContent}`);
-                    } else {
-                        speak(`${field.replace('-', ' ')} is not available`);
-                    }
-                });
-            });
-        } else {
-            speak(`${field.replace('-', ' ')} is not available`);
-        }
+        speak(`${field.replace('-', ' ')} is not available`);
     }
 }
 
@@ -183,31 +156,7 @@ function speakField(field) {
 function speakForecast() {
     const forecastItems = document.querySelectorAll('#forecast-list li');
     if (!forecastItems.length) {
-        if ('caches' in window) {
-            caches.match(window.location.href).then(response => {
-                if (!response) return;
-                response.text().then(html => {
-                    const parser = new DOMParser();
-                    const doc = parser.parseFromString(html, 'text/html');
-                    const cachedItems = doc.querySelectorAll('#forecast-list li');
-                    if (!cachedItems.length) {
-                        speak("No forecast data available.");
-                        return;
-                    }
-                    let text = "5-day forecast (cached): ";
-                    cachedItems.forEach(li => {
-                        const day = li.querySelector('[data-day]')?.textContent || '—';
-                        const high = li.querySelector('[data-high]')?.textContent || '—';
-                        const low = li.querySelector('[data-low]')?.textContent || '—';
-                        const desc = li.querySelector('[data-desc]')?.textContent || '—';
-                        text += `${day}: ${desc}, high ${high}, low ${low}. `;
-                    });
-                    speak(text);
-                });
-            });
-        } else {
-            speak("No forecast data available.");
-        }
+        speak("No forecast data available.");
         return;
     }
 
@@ -230,8 +179,7 @@ enableVoiceBtn?.addEventListener('click', () => {
     voiceEnabled = !voiceEnabled;
 
     if (voiceEnabled) {
-        // Load settings from localStorage
-        selectedVoiceName = localStorage.getItem('voiceName') || selectedVoiceName;
+        selectedVoiceName = localStorage.getItem('preferredVoice') || selectedVoiceName;
         speechRate = parseFloat(localStorage.getItem('speechRate')) || speechRate;
         speechPitch = parseFloat(localStorage.getItem('speechPitch')) || speechPitch;
         populateVoice();
@@ -245,3 +193,4 @@ enableVoiceBtn?.addEventListener('click', () => {
         enableVoiceBtn.textContent = "Enable Voice";
     }
 });
+
