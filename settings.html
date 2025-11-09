@@ -5,59 +5,260 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>WeatherEase — Settings</title>
   <link rel="stylesheet" href="style.css">
-  <script src="theme.js"></script>
+  <meta name="theme-color" content="#0277bd">
+  <script src="theme.js" defer></script>
+  <script src="voice-control.js" defer></script>
+  <style>
+    /* Polished card and input styles */
+    .card {
+      max-width: 500px;
+      margin: 0 auto;
+      padding: 1.5rem;
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+      border-radius: 12px;
+      background: rgba(10,16,26,0.5);
+      color: #fff;
+    }
+
+    label {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    label.flex-right {
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    input[type="number"] {
+      width: 60px;
+      padding: 0.3rem 0.6rem;
+      border-radius: 999px;
+      border: 1px solid rgba(255,255,255,0.3);
+      background: rgba(10,16,26,0.5);
+      color: #fff;
+      text-align: center;
+      font-size: 0.9rem;
+    }
+
+    input[type="range"] {
+      border-radius: 999px;
+    }
+
+    button.tts-btn {
+      padding: 0.5rem 1rem;
+      border-radius: 999px;
+      cursor: pointer;
+      font-size: 0.9rem;
+      background: rgba(0, 170, 255, 0.85);
+      color: #fff;
+      border: none;
+      transition: background 0.2s;
+      align-self: flex-end;
+      margin-top: 0.5rem;
+    }
+
+    button.tts-btn:hover {
+      background: rgba(0, 170, 255, 1);
+    }
+
+    .slider-container {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      justify-content: flex-end;
+      min-width: 150px;
+    }
+
+    small {
+      font-size: 0.75rem;
+      opacity: 0.85;
+    }
+
+    h3 {
+      margin-top: 1rem;
+    }
+  </style>
 </head>
 <body>
+  <!-- NAVBAR -->
   <header>
     <h1>WeatherEase Settings</h1>
     <nav>
-      <a href="index.html">Home</a>
-      <a href="weather.html">Weather</a>
-      <a href="exit.html">Exit</a>
+      <ul>
+        <li><button id="home-btn">🏠 Home</button></li>
+        <li><button id="weather-btn">🌤️ Weather</button></li>
+        <li><button id="settings-btn">⚙️ Settings</button></li>
+        <li><button id="exit-btn">🚪 Exit</button></li>
+      </ul>
     </nav>
   </header>
 
   <main>
-    <h2>Accessibility & Voice Settings</h2>
-    <form aria-label="Accessibility settings" style="display:grid; gap:.75rem; max-width:600px;">
-      <!-- Accessibility toggles -->
-      <label><input type="checkbox" id="dark-mode" /> Dark mode</label>
-      <label><input type="checkbox" id="big-text" /> Use larger text</label>
-      <label><input type="checkbox" id="high-contrast" /> High contrast</label>
-      <label><input type="checkbox" id="voice" /> Enable voice commands</label>
-      <label>Units: 
-        <select id="units-select"> 
-          <option value="metric">Metric (°C, m/s)</option>
-          <option value="imperial">Imperial (°F, mph)</option>
+    <h2 style="text-align:center; margin-bottom:1.5rem;">⚙️ Settings</h2>
+
+    <div class="card">
+      <!-- Theme toggles -->
+      <label>
+        <input type="checkbox" id="dark-mode">
+        🌙 Dark Mode
+      </label>
+
+      <label>
+        <input type="checkbox" id="big-text">
+        🔠 Big Text
+      </label>
+
+      <label>
+        <input type="checkbox" id="high-contrast">
+        🌓 High Contrast
+      </label>
+
+      <!-- Units -->
+      <label class="flex-right">
+        🌡️ Temperature Units
+        <select id="units-select" style="border-radius:999px; padding:0.4rem 0.8rem; background:rgba(10,16,26,0.5); color:#fff; border:1px solid rgba(255,255,255,0.3);">
+          <option value="metric">Celsius (°C)</option>
+          <option value="imperial">Fahrenheit (°F)</option>
         </select>
       </label>
 
-      <hr>
+      <!-- Voice Settings -->
+      <h3>🎙️ Voice Settings</h3>
 
-      <!-- Voice settings -->
-      <h3>Voice Settings</h3>
-      <label>
-        Select Voice:
-        <select id="voice-select"></select>
+      <label class="flex-right">
+        🗣️ Voice
+        <select id="voiceName" style="border-radius:999px; padding:0.4rem 0.8rem; background:rgba(10,16,26,0.5); color:#fff; border:1px solid rgba(255,255,255,0.3); min-width:150px;">
+          <!-- Dynamically populated -->
+        </select>
       </label>
-      <label>
-        Speech Rate: <input type="range" id="voice-rate" min="0.5" max="2" step="0.05">
-        <span id="rate-display"></span>
-        <small style="display:block; opacity:0.7;">Recommended: 1.0</small>
-      </label>
-      <label>
-        Pitch: <input type="range" id="voice-pitch" min="0" max="2" step="0.1">
-        <span id="pitch-display"></span>
-        <small style="display:block; opacity:0.7;">Recommended: 1.0</small>
-      </label>
-      <button type="button" id="preview-voice">Preview Voice</button>
 
-      <div id="voice-status" style="margin-top:.5rem;">Current voice settings will appear here…</div>
-    </form>
+      <!-- Rate -->
+      <label class="flex-right">
+        ⚡ Speed
+        <div class="slider-container">
+          <input type="range" id="speechRate" min="0.5" max="2" step="0.1" value="1">
+          <span id="speechRateValue">1</span>
+        </div>
+      </label>
+      <small>Recommended: 1</small>
+
+      <!-- Pitch -->
+      <label class="flex-right">
+        🎵 Pitch
+        <div class="slider-container">
+          <input type="range" id="speechPitch" min="0.5" max="2" step="0.1" value="1">
+          <span id="speechPitchValue">1</span>
+        </div>
+      </label>
+      <small>Recommended: 1</small>
+
+      <!-- TTS Preview Button -->
+      <button id="tts-preview-btn" class="tts-btn">
+        🔊 Preview Voice
+      </button>
+    </div>
   </main>
 
-  <script src="settings.js"></script>
+  <script>
+    // Navbar navigation
+    document.getElementById('home-btn')?.addEventListener('click', () => window.location.href = "index.html");
+    document.getElementById('weather-btn')?.addEventListener('click', () => window.location.href = "weather.html");
+    document.getElementById('settings-btn')?.addEventListener('click', () => window.location.href = "settings.html");
+    document.getElementById('exit-btn')?.addEventListener('click', () => window.location.href = "exit.html");
+
+    // Theme toggles
+    const darkModeCheckbox = document.getElementById('dark-mode');
+    const bigTextCheckbox = document.getElementById('big-text');
+    const highContrastCheckbox = document.getElementById('high-contrast');
+    const unitsSelect = document.getElementById('units-select');
+
+    darkModeCheckbox.checked = localStorage.getItem('darkMode') === 'true';
+    bigTextCheckbox.checked = localStorage.getItem('bigText') === 'true';
+    highContrastCheckbox.checked = localStorage.getItem('highContrast') === 'true';
+    unitsSelect.value = localStorage.getItem('units') || 'metric';
+
+    darkModeCheckbox.addEventListener('change', () => {
+      localStorage.setItem('darkMode', darkModeCheckbox.checked);
+      document.body.classList.toggle('dark-mode', darkModeCheckbox.checked);
+    });
+
+    bigTextCheckbox.addEventListener('change', () => {
+      localStorage.setItem('bigText', bigTextCheckbox.checked);
+      document.documentElement.style.fontSize = bigTextCheckbox.checked ? '18px' : '';
+    });
+
+    highContrastCheckbox.addEventListener('change', () => {
+      localStorage.setItem('highContrast', highContrastCheckbox.checked);
+      document.body.style.filter = highContrastCheckbox.checked ? 'contrast(1.2)' : '';
+    });
+
+    unitsSelect.addEventListener('change', () => {
+      localStorage.setItem('units', unitsSelect.value);
+    });
+
+    // Voice settings
+    function populateVoices() {
+      const voiceSelect = document.getElementById('voiceName');
+      const voices = speechSynthesis.getVoices();
+      voiceSelect.innerHTML = '';
+      voices.forEach(v => {
+        const option = document.createElement('option');
+        option.value = v.name;
+        option.textContent = `${v.name} (${v.lang})`;
+        voiceSelect.appendChild(option);
+      });
+      const savedVoice = localStorage.getItem('voiceName');
+      if (savedVoice) voiceSelect.value = savedVoice;
+    }
+
+    speechSynthesis.onvoiceschanged = populateVoices;
+    populateVoices();
+
+    const rateInput = document.getElementById('speechRate');
+    const pitchInput = document.getElementById('speechPitch');
+    const rateDisplay = document.getElementById('speechRateValue');
+    const pitchDisplay = document.getElementById('speechPitchValue');
+
+    rateInput.value = localStorage.getItem('speechRate') || 1;
+    pitchInput.value = localStorage.getItem('speechPitch') || 1;
+
+    rateDisplay.textContent = rateInput.value;
+    pitchDisplay.textContent = pitchInput.value;
+
+    rateInput.addEventListener('input', () => {
+      rateDisplay.textContent = rateInput.value;
+      localStorage.setItem('speechRate', rateInput.value);
+    });
+
+    pitchInput.addEventListener('input', () => {
+      pitchDisplay.textContent = pitchInput.value;
+      localStorage.setItem('speechPitch', pitchInput.value);
+    });
+
+    document.getElementById('voiceName').addEventListener('change', (e) => {
+      localStorage.setItem('voiceName', e.target.value);
+    });
+
+    // TTS Preview
+    document.getElementById('tts-preview-btn').addEventListener('click', () => {
+      const msg = new SpeechSynthesisUtterance("This is a preview of your selected voice settings.");
+      msg.voice = speechSynthesis.getVoices().find(v => v.name === localStorage.getItem('voiceName')) || null;
+      msg.rate = parseFloat(localStorage.getItem('speechRate')) || 1;
+      msg.pitch = parseFloat(localStorage.getItem('speechPitch')) || 1;
+      speechSynthesis.speak(msg);
+    });
+  </script>
 </body>
 </html>
+
+
+
+
+
+
 
 

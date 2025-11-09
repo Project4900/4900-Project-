@@ -3,50 +3,52 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>WeatherEase</title>
-
-  <!-- iOS Home Screen Name -->
-  <meta name="apple-mobile-web-app-title" content="WeatherEase">
-
-  <!-- Manifest for Android / PWA -->
-  <link rel="manifest" href="manifest.json">
-
-  <!-- Apple touch icon -->
-  <link rel="apple-touch-icon" sizes="180x180" href="icons/weather-192.png">
-
-  <!-- Optional: Safari theme color -->
-  <meta name="theme-color" content="#0277bd">
-
+  <title>WeatherEase — Home</title>
   <link rel="stylesheet" href="style.css">
+  <meta name="theme-color" content="#0277bd">
+  <script src="theme.js"></script>
+  <script src="voice-control.js" defer></script>
+  <style>
+    /* Home page specific button styling */
+    .home-button {
+      background: rgba(0,173,255,0.8);
+      border: 1px solid rgba(255,255,255,0.3);
+      border-radius: 999px;
+      padding: 0.8rem 1.5rem;
+      font-size: 1rem;
+      color: #fff;
+      cursor: pointer;
+      transition: background 0.25s ease, transform 0.15s ease;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      min-width: 140px;
+      justify-content: center;
+      font-weight: 600;
+    }
+
+    .home-button:hover {
+      background: rgba(0,173,255,1);
+      transform: translateY(-2px);
+    }
+  </style>
 </head>
 <body>
-  <main class="dashboard">
-    <h1 style="text-align:center; margin-top:2rem;">WeatherEase</h1>
-    <p style="text-align:center; opacity:.8;">Accessible, simple weather for everyone</p>
+  <main style="text-align:center; padding:2rem;">
+    <div class="home-container">
+      <h2>Welcome to WeatherEase!</h2>
+      <p>Get instant weather updates and forecasts easily.</p>
+      <div style="margin-top:2rem; display:flex; justify-content:center; gap:1rem; flex-wrap:wrap;">
+        <button id="weather-btn" class="home-button">🌤️ Weather</button>
+        <button id="settings-btn" class="home-button">⚙️ Settings</button>
+        <button id="exit-btn" class="home-button">❌ Exit</button>
+      </div>
 
-    <div class="dashboard-buttons">
-      <button class="home-button" id="weather-btn">
-        🌤️<br>Weather
+      <button id="start-voice-btn" style="margin-top:2rem; padding:0.8rem 1.5rem; border-radius:999px; cursor:pointer;">
+        🎤 Enable Voice Commands
       </button>
-      <button class="home-button" id="settings-btn">
-        ⚙️<br>Settings
-      </button>
-      <button class="home-button" id="exit-btn">
-        ❌<br>Exit
-      </button>
-      <button class="home-button" id="start-voice-btn">
-        🎤<br>Enable Voice
-      </button>
-    </div>
-
-    <div id="voice-status" style="text-align:center; margin-top:1rem; opacity:.8;">
-      Voice status will appear here…
+      <p id="voice-status" style="margin-top:0.75rem; font-size:0.9rem; opacity:0.85;"></p>
     </div>
   </main>
-
-  <!-- Scripts -->
-  <script src="voice-control.js"></script>
-  <script src="theme.js"></script>
 </body>
 </html>
-
