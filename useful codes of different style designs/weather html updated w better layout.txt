@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>WeatherEase — Weather</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+<header>
+  <h1>WeatherEase</h1>
+  <nav>
+    <ul style="display:flex; align-items:center; gap:1rem; list-style:none; padding:0; margin:0;">
+      <li><a href="index.html">Home</a></li>
+      <li><a href="settings.html">Settings</a></li>
+      <li><a href="exit.html">Exit</a></li>
+      <li><button id="enable-voice-btn" class="nav-link-btn">Enable Voice</button></li>
+    </ul>
+  </nav>
+</header>
+
+<main class="weather-container">
+
+  <div class="weather-cards">
+    <!-- Left Card: Current Conditions -->
+    <section class="card current-card">
+      <h2>Current Conditions</h2>
+      <form id="location-form" style="display:flex; gap:.5rem; flex-wrap:wrap;">
+        <input id="search" type="search" placeholder="City or ZIP"/>
+        <button type="button" id="geo-btn">Use My Location</button>
+      </form>
+
+      <div id="current-card">
+        <p><strong>Location:</strong> <span data-field="place">—</span></p>
+        <p><strong>Temperature:</strong> <span data-field="temperature">—</span></p>
+        <p><strong>Feels like:</strong> <span data-field="feels like">—</span></p>
+        <p><strong>Condition:</strong> <span data-field="current condition">—</span></p>
+        <p><strong>Humidity:</strong> <span data-field="humidity">—</span></p>
+        <p><strong>Wind:</strong> <span data-field="wind">—</span></p>
+      </div>
+      <div id="current-status" aria-live="polite" style="opacity:.8;">Ready.</div>
+    </section>
+
+    <!-- Right Card: 5-Day Forecast -->
+    <section class="card forecast-card">
+      <h2>5-Day Forecast</h2>
+      <ul id="forecast-list" style="display:grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap:.75rem; list-style:none; padding:0;">
+        <li class="day" aria-label="Day 1"><strong data-day>—</strong><br><span data-high>—</span> / <span data-low>—</span><br><span data-desc>—</span></li>
+        <li class="day" aria-label="Day 2"><strong data-day>—</strong><br><span data-high>—</span> / <span data-low>—</span><br><span data-desc>—</span></li>
+        <li class="day" aria-label="Day 3"><strong data-day>—</strong><br><span data-high>—</span> / <span data-low>—</span><br><span data-desc>—</span></li>
+        <li class="day" aria-label="Day 4"><strong data-day>—</strong><br><span data-high>—</span> / <span data-low>—</span><br><span data-desc>—</span></li>
+        <li class="day" aria-label="Day 5"><strong data-day>—</strong><br><span data-high>—</span> / <span data-low>—</span><br><span data-desc>—</span></li>
+      </ul>
+    </section>
+  </div>
+
+  <!-- Bottom Card: Chat / AI Assistant -->
+  <section class="card chat-card" aria-label="AI Weather Assistant" style="margin-top:2rem;">
+    <h2>Ask a question</h2>
+    <div id="chat-log" class="chat-log"
+         style="max-height:200px; overflow-y:auto; border:1px solid #ccc; padding:0.5rem; border-radius:8px;">
+    </div>
+    <form id="chat-form" style="display:flex; gap:.5rem; margin-top:.5rem;">
+      <input id="chat-input" type="text" placeholder="Ask me about the weather..." autocomplete="off"
+             style="flex:1; padding:.4rem; border-radius:5px; border:1px solid #aaa;">
+      <button type="submit" style="padding:.4rem 1rem;">Send</button>
+    </form>
+  </section>
+</main>
+
+<!-- Scripts -->
+<script src="voice-control-weather.js"></script>
+<script src="script.js"></script>
+</body>
+</html>

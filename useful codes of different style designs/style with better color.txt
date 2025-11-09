@@ -1,0 +1,246 @@
+:root {
+    --brand: #00aaff;
+    --brand-dark: #0077cc;
+    --text-light: #ffffff;
+    --glass-bg: rgba(255, 255, 255, 0.15);
+    --blur: blur(16px);
+    --highlight: #ffeb3b;
+    --shadow: 0 8px 30px rgba(0, 0, 0, 0.25);
+    --max-w: 1100px;
+}
+
+/* Reset */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+html, body {
+    height: 100%;
+    font-family: 'Segoe UI', Roboto, Arial, sans-serif;
+    color: var(--text-light);
+    background: linear-gradient(120deg, #74b9ff, #a29bfe, #81ecec, #0984e3);
+    background-size: 400% 400%;
+    animation: skyShift 18s ease infinite;
+    overflow-x: hidden;
+}
+
+@keyframes skyShift {
+    0% {
+        background-position: 0% 50%;
+    }
+
+    50% {
+        background-position: 100% 50%;
+    }
+
+    100% {
+        background-position: 0% 50%;
+    }
+}
+
+/* Header */
+header {
+    background: rgba(0, 0, 0, 0.45);
+    backdrop-filter: blur(10px);
+    color: #fff;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem 2rem;
+    box-shadow: var(--shadow);
+    position: sticky;
+    top: 0;
+    z-index: 10;
+}
+
+    header h1 {
+        font-size: 1.7rem;
+        font-weight: 700;
+        letter-spacing: 1px;
+    }
+
+.nav-buttons {
+    display: flex;
+    gap: 0.6rem;
+}
+
+    .nav-buttons button {
+        background: linear-gradient(135deg, var(--brand), var(--brand-dark));
+        border: none;
+        color: #fff;
+        padding: 0.55rem 1.1rem;
+        border-radius: 0.6rem;
+        font-weight: 500;
+        cursor: pointer;
+        transition: all 0.25s ease;
+        box-shadow: 0 3px 10px rgba(0, 0, 0, 0.2);
+    }
+
+        .nav-buttons button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+            filter: brightness(1.1);
+        }
+
+        /* Fix "Enable Voice" button */
+        .nav-buttons button:last-child {
+            background: rgba(255, 255, 255, 0.25);
+            color: #fff;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            backdrop-filter: blur(8px);
+        }
+
+            .nav-buttons button:last-child:hover {
+                background: rgba(255, 255, 255, 0.35);
+            }
+
+/* Layout */
+main {
+    max-width: var(--max-w);
+    margin: 3rem auto;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 2rem;
+    padding: 0 1rem;
+}
+
+/* Cards */
+.weather-card {
+    background: var(--glass-bg);
+    backdrop-filter: var(--blur);
+    border-radius: 20px;
+    box-shadow: var(--shadow);
+    padding: 2rem;
+    color: #fff;
+    transition: all 0.3s ease;
+}
+
+/* Current Conditions — Left */
+#current {
+    flex: 1;
+    min-width: 380px;
+}
+
+/* Forecast — Right */
+#forecast {
+    flex: 0.8;
+    min-width: 300px;
+}
+
+/* Card Title */
+.weather-card h2 {
+    text-align: center;
+    margin-bottom: 1.5rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    font-size: 1.3rem;
+}
+
+/* Current Info */
+.weather-info p {
+    font-size: 1rem;
+    margin: 0.4rem 0;
+}
+
+.weather-icon {
+    text-align: center;
+    font-size: 4rem;
+    margin: 1rem 0;
+}
+
+/* Note Box */
+.note-box {
+    background: var(--highlight);
+    color: #222;
+    padding: 0.8rem;
+    border-radius: 8px;
+    font-weight: 600;
+    text-align: center;
+    font-size: 0.9rem;
+    margin-top: 1rem;
+    box-shadow: inset 0 2px 8px rgba(0, 0, 0, 0.15);
+}
+
+/* Forecast */
+#forecast-list {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 0.8rem;
+}
+
+    #forecast-list li {
+        list-style: none;
+        background: rgba(255, 255, 255, 0.18);
+        backdrop-filter: blur(8px);
+        border-radius: 12px;
+        padding: 1rem 0.5rem;
+        text-align: center;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+        transition: all 0.25s ease;
+        font-weight: 500;
+        font-size: 0.9rem;
+    }
+
+        #forecast-list li:hover {
+            transform: translateY(-4px);
+            background: rgba(255, 255, 255, 0.28);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
+        }
+
+    #forecast-list [data-day] {
+        display: block;
+        font-size: 1rem;
+        color: #ffeb3b;
+        margin-bottom: 0.3rem;
+    }
+
+    #forecast-list [data-high] {
+        font-size: 0.9rem;
+    }
+
+    #forecast-list [data-desc] {
+        display: block;
+        font-size: 0.8rem;
+        opacity: 0.85;
+        margin-top: 0.2rem;
+    }
+
+/* Fixed clouds overlay */
+body::before {
+    content: "";
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 200%;
+    height: 100%;
+    background: url("https://png.pngtree.com/png-vector/20220628/ourmid/pngtree-cartoon-cumulus-clouds-png-image_5580285.png") repeat-x;
+    background-size: contain;
+    opacity: 0.18;
+    animation: moveClouds 120s linear infinite;
+    pointer-events: none;
+}
+
+@keyframes moveClouds {
+    from {
+        transform: translateX(0);
+    }
+
+    to {
+        transform: translateX(-50%);
+    }
+}
+
+/* Responsive */
+@media (max-width: 900px) {
+    main {
+        flex-direction: column;
+        align-items: center;
+    }
+
+    #forecast {
+        width: 100%;
+    }
+}

@@ -1,0 +1,13 @@
+colors for buttons     
+padding: 0.6rem 1.2rem;
+    background: linear-gradient(135deg, #0b47c1, #001156);
+    border: none;
+    color: #ffffff;
+    border-radius: 999px;
+    cursor: pointer;
+    font-weight: 600;
+    transition: background 0.25s, transform 0.15s;
+}
+
+#chat-form button:hover {
+    background: linear-gradient(135deg, #182e8f, #588ee6);

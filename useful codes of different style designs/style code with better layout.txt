@@ -1,0 +1,161 @@
+/* =============================
+   WeatherEase Global Styles
+   ============================= */
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+body {
+    background-color: #f2f7fa;
+    color: #222;
+    line-height: 1.5;
+    padding: 1rem;
+}
+
+/* Dark Mode */
+body.dark-mode {
+    background-color: #1e1e1e;
+    color: #f2f2f2;
+}
+
+/* Headings */
+h1, h2, h3 {
+    margin-bottom: 0.5rem;
+}
+
+/* Navigation */
+nav ul li a,
+nav ul li button {
+    text-decoration: none;
+    color: inherit;
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 1rem;
+    padding: 0.25rem 0.5rem;
+    transition: color 0.2s;
+}
+
+nav ul li a:hover,
+nav ul li button:hover {
+    color: #0277bd;
+}
+
+/* =============================
+   Weather Page Layout
+   ============================= */
+.weather-container {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+/* Cards container */
+.weather-cards {
+    display: flex;
+    flex-direction: row;
+    gap: 1rem;
+    flex-wrap: wrap;
+}
+
+/* Individual card styling */
+.card {
+    background-color: #fff;
+    padding: 1rem;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    flex: 1 1 300px;
+}
+
+body.dark-mode .card {
+    background-color: #2a2a2a;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.4);
+}
+
+/* Current / Forecast cards */
+.current-card, .forecast-card {
+    min-width: 300px;
+}
+
+/* Forecast list styling */
+#forecast-list li {
+    background-color: #eaf1fc;
+    padding: 0.5rem;
+    border-radius: 8px;
+    text-align: center;
+}
+
+body.dark-mode #forecast-list li {
+    background-color: #3a3a3a;
+}
+
+/* Chat card */
+.chat-card {
+    min-height: 250px;
+}
+
+/* Chat log */
+.chat-log {
+    background-color: #f9f9f9;
+    border: 1px solid #ccc;
+    padding: 0.5rem;
+    border-radius: 8px;
+    overflow-y: auto;
+    max-height: 200px;
+}
+
+body.dark-mode .chat-log {
+    background-color: #3a3a3a;
+    border-color: #555;
+}
+
+/* Chat messages */
+.chat-log .user {
+    text-align: right;
+    margin-bottom: 0.25rem;
+    font-weight: bold;
+    color: #0277bd;
+}
+
+.chat-log .bot {
+    text-align: left;
+    margin-bottom: 0.25rem;
+    font-weight: bold;
+    color: #555;
+}
+
+body.dark-mode .chat-log .bot {
+    color: #ccc;
+}
+
+/* Chat form input */
+#chat-form input {
+    border: 1px solid #aaa;
+    border-radius: 6px;
+    padding: 0.5rem;
+    flex: 1;
+}
+
+#chat-form button {
+    padding: 0.5rem 1rem;
+    background-color: #0277bd;
+    border: none;
+    color: #fff;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+#chat-form button:hover {
+    background-color: #015a9c;
+}
+
+/* Responsive layout */
+@media (max-width: 800px) {
+    .weather-cards {
+        flex-direction: column;
+    }
+}
