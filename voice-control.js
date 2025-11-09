@@ -1,5 +1,5 @@
 // =========================
-// Home Page Voice + Button Navigation
+// Home Page Voice + Button Navigation (fixed sequential speech)
 // =========================
 
 window.addEventListener('DOMContentLoaded', () => {
@@ -16,7 +16,7 @@ window.addEventListener('DOMContentLoaded', () => {
     // Get user voice settings
     // ----------------------------
     function getUserVoiceSettings() {
-        const name = localStorage.getItem('voiceName'); // matches settings.js
+        const name = localStorage.getItem('voiceName'); 
         const rate = parseFloat(localStorage.getItem('speechRate') || 1);
         const pitch = parseFloat(localStorage.getItem('speechPitch') || 1);
         const voices = synth.getVoices();
@@ -27,9 +27,9 @@ window.addEventListener('DOMContentLoaded', () => {
     // ----------------------------
     // Speak text using user preferences
     // ----------------------------
-    function speak(text) {
-        if(!voiceEnabled) return;
-        if (synth.speaking) synth.cancel();
+    function speak(text, cancelBefore = true) {
+        if (!voiceEnabled) return;
+        if (cancelBefore && synth.speaking) synth.cancel();
         const utter = new SpeechSynthesisUtterance(text);
         const { voice, rate, pitch } = getUserVoiceSettings();
         utter.voice = voice;
@@ -39,7 +39,31 @@ window.addEventListener('DOMContentLoaded', () => {
     }
 
     // ----------------------------
-    // Greet user
+    // Speak multiple lines in order
+    // ----------------------------
+    function speakSequence(lines) {
+        if (!voiceEnabled) return;
+        let index = 0;
+
+        function speakNext() {
+            if (index >= lines.length) return;
+            const utter = new SpeechSynthesisUtterance(lines[index]);
+            const { voice, rate, pitch } = getUserVoiceSettings();
+            utter.voice = voice;
+            utter.rate = rate;
+            utter.pitch = pitch;
+            utter.onend = () => {
+                index++;
+                speakNext();
+            };
+            synth.speak(utter);
+        }
+
+        speakNext();
+    }
+
+    // ----------------------------
+    // Greet user (now speaks all lines)
     // ----------------------------
     function greetUser() {
         const lines = [
@@ -49,7 +73,7 @@ window.addEventListener('DOMContentLoaded', () => {
             "Option 2: Settings.",
             "Option 9: Exit."
         ];
-        lines.forEach(line => speak(line));
+        speakSequence(lines);
         if (voiceStatus) voiceStatus.textContent = "Awaiting voice command...";
     }
 
@@ -58,7 +82,7 @@ window.addEventListener('DOMContentLoaded', () => {
     // ----------------------------
     function startVoiceRecognition() {
         if (!('webkitSpeechRecognition' in window || 'SpeechRecognition' in window)) {
-            if(voiceStatus) voiceStatus.textContent = "Voice commands not supported in this browser.";
+            if (voiceStatus) voiceStatus.textContent = "Voice commands not supported in this browser.";
             return;
         }
         const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
@@ -70,12 +94,12 @@ window.addEventListener('DOMContentLoaded', () => {
         recognition.start();
 
         recognition.onresult = (event) => {
-            const command = event.results[event.results.length-1][0].transcript.trim().toLowerCase();
+            const command = event.results[event.results.length - 1][0].transcript.trim().toLowerCase();
             handleVoiceCommand(command);
         };
 
         recognition.onerror = (event) => {
-            if(voiceStatus) voiceStatus.textContent = `Error: ${event.error}`;
+            if (voiceStatus) voiceStatus.textContent = `Error: ${event.error}`;
         };
 
         recognition.onend = () => {
@@ -87,7 +111,7 @@ window.addEventListener('DOMContentLoaded', () => {
     // Handle voice commands
     // ----------------------------
     function handleVoiceCommand(cmd) {
-        switch(cmd) {
+        switch (cmd) {
             case '1': case 'one': case 'get weather': case 'weather':
                 speak("Opening Weather page");
                 window.location.href = "weather.html";
@@ -108,13 +132,13 @@ window.addEventListener('DOMContentLoaded', () => {
     // ----------------------------
     // Button click handlers
     // ----------------------------
-    if(weatherBtn) weatherBtn.addEventListener('click', () => window.location.href = "weather.html");
-    if(settingsBtn) settingsBtn.addEventListener('click', () => window.location.href = "settings.html");
-    if(exitBtn) exitBtn.addEventListener('click', () => window.location.href = "exit.html");
+    if (weatherBtn) weatherBtn.addEventListener('click', () => window.location.href = "weather.html");
+    if (settingsBtn) settingsBtn.addEventListener('click', () => window.location.href = "settings.html");
+    if (exitBtn) exitBtn.addEventListener('click', () => window.location.href = "exit.html");
 
-    if(startVoiceBtn) startVoiceBtn.addEventListener('click', () => {
+    if (startVoiceBtn) startVoiceBtn.addEventListener('click', () => {
         voiceEnabled = true;
-        localStorage.setItem('voiceEnabled', true); // save to storage
+        localStorage.setItem('voiceEnabled', true);
         speak("Voice features enabled!");
         startVoiceRecognition();
         greetUser();
@@ -124,12 +148,12 @@ window.addEventListener('DOMContentLoaded', () => {
     // ----------------------------
     // Auto-start if voice enabled
     // ----------------------------
-    if(localStorage.getItem('voiceEnabled') === 'true') {
+    if (localStorage.getItem('voiceEnabled') === 'true') {
         voiceEnabled = true;
         speak("Voice features enabled!");
         startVoiceRecognition();
         greetUser();
-        if(startVoiceBtn) startVoiceBtn.style.display = "none";
+        if (startVoiceBtn) startVoiceBtn.style.display = "none";
     }
 });
 

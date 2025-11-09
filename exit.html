@@ -7,13 +7,48 @@
   <link rel="stylesheet" href="style.css">
   <meta name="theme-color" content="#0277bd">
   <script src="theme.js"></script>
+
+  <style>
+    /* Return Home button styling */
+    .home-button {
+      display: inline-block;
+      background: rgba(10, 16, 26, 0.5);
+      color: #fff;
+      border: 1px solid rgba(255, 255, 255, 0.3);
+      padding: 0.6rem 1.4rem;
+      border-radius: 999px;
+      text-decoration: none;
+      font-size: 1rem;
+      transition: all 0.3s ease;
+      cursor: pointer;
+      margin-top: 2rem;
+    }
+
+    .home-button:hover {
+      background: rgba(0, 170, 255, 0.8);
+      border-color: rgba(255, 255, 255, 0.5);
+      transform: scale(1.05);
+    }
+
+    .home-button:active {
+      transform: scale(0.98);
+      opacity: 0.9;
+    }
+
+    .home-container {
+      text-align: center;
+      padding: 2rem;
+    }
+  </style>
 </head>
+
 <body>
-  <div class="home-container" style="text-align:center; padding:2rem;">
+  <div class="home-container">
     <h1>Goodbye from WeatherEase!</h1>
     <p>Thank you for using the app. Come back anytime for quick and accessible weather updates.</p>
-    <a href="index.html" class="home-button" style="margin-top:2rem;">Return Home</a>
+    <a href="index.html" class="home-button">Return Home</a>
   </div>
 </body>
 </html>
+
 

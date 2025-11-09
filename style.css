@@ -14,7 +14,6 @@
 body {
     position: relative;
     min-height: 100vh;
-    /* deep blue gradient */
     background: radial-gradient(circle at 0% 0%, #2b4c7e 0, transparent 45%), radial-gradient(circle at 100% 0%, #1c3a63 0, transparent 45%), linear-gradient(180deg, #050b18, #091524 50%, #050b18 100%);
     background-size: 200% 200%;
     animation: skyShift 30s ease-in-out infinite;
@@ -24,26 +23,12 @@ body {
     overflow-x: hidden;
 }
 
-/* animated highlight in the sky */
 @keyframes skyShift {
-    0% {
-        background-position: 0% 0%, 100% 0%, 50% 0%;
-    }
-
-    50% {
-        background-position: 100% 50%, 0% 50%, 50% 100%;
-    }
-
-    100% {
-        background-position: 0% 0%, 100% 0%, 50% 0%;
-    }
+    0% { background-position: 0% 0%, 100% 0%, 50% 0%; }
+    50% { background-position: 100% 50%, 0% 50%, 50% 100%; }
+    100% { background-position: 0% 0%, 100% 0%, 50% 0%; }
 }
 
-/* -----------------------------
-   CLOUDS – CSS only, very visible
-------------------------------*/
-
-/* big, soft cloud layer */
 body::before {
     content: "";
     position: fixed;
@@ -58,7 +43,6 @@ body::before {
     animation: cloudsSlow 90s linear infinite;
 }
 
-/* smaller, closer clouds for parallax */
 body::after {
     content: "";
     position: fixed;
@@ -74,28 +58,15 @@ body::after {
 }
 
 @keyframes cloudsSlow {
-    from {
-        transform: translateX(0);
-    }
-
-    to {
-        transform: translateX(-40vw);
-    }
+    from { transform: translateX(0); }
+    to { transform: translateX(-40vw); }
 }
 
 @keyframes cloudsFast {
-    from {
-        transform: translateX(0);
-    }
-
-    to {
-        transform: translateX(-80vw);
-    }
+    from { transform: translateX(0); }
+    to { transform: translateX(-80vw); }
 }
 
-/* -----------------------------
-   Dark mode (if you ever toggle it)
-------------------------------*/
 body.dark-mode {
     background: radial-gradient(circle at 0% 0%, #243b67 0, transparent 45%), radial-gradient(circle at 100% 0%, #182748 0, transparent 45%), linear-gradient(180deg, #020613, #050913 50%, #010308 100%);
     color: #f2f2f2;
@@ -112,53 +83,63 @@ header {
     padding: 0.75rem 1.5rem;
     margin: -1rem -1rem 1.5rem -1rem;
     display: flex;
-    align-items: center;
-    justify-content: space-between;
+    flex-direction: column; /* stack title + nav on small screens */
+    align-items: flex-start; /* align items to the left */
     box-shadow: 0 4px 14px rgba(0,0,0,0.4);
     border-bottom: 1px solid rgba(255,255,255,0.25);
     position: relative;
-    z-index: 5; /* above clouds */
+    z-index: 5;
 }
 
-    header h1 {
-        margin: 0;
-        font-size: 1.7rem;
-    }
+header h1 {
+    margin: 0 0 0.5rem 0;
+    font-size: 1.7rem;
+}
 
 nav ul {
     display: flex;
+    flex-wrap: wrap; /* allow wrapping on smaller screens */
     align-items: center;
-    gap: 1rem;
+    gap: 0.5rem;
     list-style: none;
+    justify-content: flex-start; /* left align */
 }
 
+nav ul li a,
+nav ul li button {
+    text-decoration: none;
+    color: #fff;
+    background: rgba(255,255,255,0.16);
+    border: 1px solid rgba(255,255,255,0.3);
+    border-radius: 999px;
+    cursor: pointer;
+    padding: 0.45rem 0.9rem;
+    font-size: 0.95rem;
+    transition: background 0.25s ease, transform 0.15s ease;
+}
+
+nav ul li a:hover,
+nav ul li button:hover {
+    background: rgba(255,255,255,0.3);
+    transform: translateY(-2px);
+}
+
+@media (max-width: 600px) {
     nav ul li a,
     nav ul li button {
-        text-decoration: none;
-        color: #fff;
-        background: rgba(255,255,255,0.16);
-        border: 1px solid rgba(255,255,255,0.3);
-        border-radius: 999px;
-        cursor: pointer;
-        padding: 0.45rem 0.9rem;
-        font-size: 0.95rem;
-        transition: background 0.25s ease, transform 0.15s ease;
+        padding: 0.35rem 0.7rem;
+        font-size: 0.9rem;
     }
-
-        nav ul li a:hover,
-        nav ul li button:hover {
-            background: rgba(255,255,255,0.3);
-            transform: translateY(-2px);
-        }
+}
 
 /* Enable Voice pill */
 #enable-voice-btn {
     background: rgba(0, 173, 255, 0.8);
 }
 
-    #enable-voice-btn:hover {
-        background: rgba(0, 173, 255, 1);
-    }
+#enable-voice-btn:hover {
+    background: rgba(0, 173, 255, 1);
+}
 
 /* -----------------------------
    Main layout
@@ -170,7 +151,7 @@ nav ul {
     flex-direction: column;
     gap: 1.5rem;
     position: relative;
-    z-index: 2; /* above clouds */
+    z-index: 2;
 }
 
 .weather-cards {
@@ -180,7 +161,6 @@ nav ul {
     flex-wrap: wrap;
 }
 
-/* Glass cards */
 .card {
     background: rgba(255,255,255,0.14);
     backdrop-filter: blur(18px);
@@ -194,19 +174,15 @@ nav ul {
     color: #f7f9ff;
 }
 
-    .card:hover {
-        transform: translateY(-4px);
-        box-shadow: 0 14px 40px rgba(0,0,0,0.45);
-    }
+.card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 14px 40px rgba(0,0,0,0.45);
+}
 
-/* Keep your min widths */
 .current-card, .forecast-card {
     min-width: 300px;
 }
 
-/* -----------------------------
-   Current card form & text
-------------------------------*/
 #location-form {
     display: flex;
     flex-wrap: wrap;
@@ -214,36 +190,36 @@ nav ul {
     margin-bottom: 0.75rem;
 }
 
-    #location-form input {
-        flex: 1 1 180px;
-    }
+#location-form input {
+    flex: 1 1 180px;
+}
 
-    #location-form input,
-    #location-form button {
-        border-radius: 999px;
-        padding: 0.6rem 0.9rem;
-        border: 1px solid rgba(255,255,255,0.5);
-        background: rgba(10,16,26,0.4);
-        color: #e0ecff;
-        font-size: 0.95rem;
-    }
+#location-form input,
+#location-form button {
+    border-radius: 999px;
+    padding: 0.6rem 0.9rem;
+    border: 1px solid rgba(255,255,255,0.5);
+    background: rgba(10,16,26,0.4);
+    color: #e0ecff;
+    font-size: 0.95rem;
+}
 
-        #location-form input::placeholder {
-            color: #9fb5d7;
-        }
+#location-form input::placeholder {
+    color: #9fb5d7;
+}
 
-    #location-form button {
-        background: linear-gradient(135deg, #00aaff, #00d4ff);
-        border: none;
-        cursor: pointer;
-        font-weight: 600;
-        transition: background 0.25s, transform 0.15s;
-    }
+#location-form button {
+    background: linear-gradient(135deg, #00aaff, #00d4ff);
+    border: none;
+    cursor: pointer;
+    font-weight: 600;
+    transition: background 0.25s, transform 0.15s;
+}
 
-        #location-form button:hover {
-            background: linear-gradient(135deg, #0090e0, #00c0f5);
-            transform: translateY(-1px);
-        }
+#location-form button:hover {
+    background: linear-gradient(135deg, #0090e0, #00c0f5);
+    transform: translateY(-1px);
+}
 
 #current-status {
     margin-top: 0.6rem;
@@ -251,9 +227,6 @@ nav ul {
     opacity: 0.9;
 }
 
-/* -----------------------------
-   Forecast styling
-------------------------------*/
 #forecast-list {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
@@ -262,33 +235,30 @@ nav ul {
     padding: 0;
 }
 
-    #forecast-list li {
-        background: rgba(255,255,255,0.16);
-        backdrop-filter: blur(14px);
-        -webkit-backdrop-filter: blur(14px);
-        padding: 0.8rem;
-        border-radius: 18px;
-        text-align: center;
-        font-size: 0.9rem;
-        color: #e1e8ff;
-        box-shadow: 0 4px 14px rgba(0,0,0,0.25);
-        transition: transform 0.2s ease, background 0.2s ease;
-    }
+#forecast-list li {
+    background: rgba(255,255,255,0.16);
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+    padding: 0.8rem;
+    border-radius: 18px;
+    text-align: center;
+    font-size: 0.9rem;
+    color: #e1e8ff;
+    box-shadow: 0 4px 14px rgba(0,0,0,0.25);
+    transition: transform 0.2s ease, background 0.2s ease;
+}
 
-        #forecast-list li:hover {
-            transform: translateY(-3px);
-            background: rgba(255,255,255,0.25);
-        }
+#forecast-list li:hover {
+    transform: translateY(-3px);
+    background: rgba(255,255,255,0.25);
+}
 
-    #forecast-list strong[data-day] {
-        display: block;
-        margin-bottom: 0.25rem;
-        font-weight: bold;
-    }
+#forecast-list strong[data-day] {
+    display: block;
+    margin-bottom: 0.25rem;
+    font-weight: bold;
+}
 
-/* -----------------------------
-   Chat card
-------------------------------*/
 .chat-card {
     min-height: 250px;
 }
@@ -304,20 +274,19 @@ nav ul {
     max-height: 200px;
 }
 
-    /* Messages (if your JS adds .user/.bot) */
-    .chat-log .user {
-        text-align: right;
-        margin-bottom: 0.25rem;
-        font-weight: bold;
-        color: #4fc3ff;
-    }
+.chat-log .user {
+    text-align: right;
+    margin-bottom: 0.25rem;
+    font-weight: bold;
+    color: #4fc3ff;
+}
 
-    .chat-log .bot {
-        text-align: left;
-        margin-bottom: 0.25rem;
-        font-weight: bold;
-        color: #e6e9ff;
-    }
+.chat-log .bot {
+    text-align: left;
+    margin-bottom: 0.25rem;
+    font-weight: bold;
+    color: #e6e9ff;
+}
 
 #chat-form {
     display: flex;
@@ -325,107 +294,37 @@ nav ul {
     margin-top: 0.5rem;
 }
 
-    #chat-form input {
-        border-radius: 999px;
-        padding: 0.6rem 0.9rem;
-        border: 1px solid rgba(255,255,255,0.4);
-        background: rgba(10,16,26,0.5);
-        color: #e0ecff;
-        flex: 1;
-    }
+#chat-form input {
+    border-radius: 999px;
+    padding: 0.6rem 0.9rem;
+    border: 1px solid rgba(255,255,255,0.4);
+    background: rgba(10,16,26,0.5);
+    color: #e0ecff;
+    flex: 1;
+}
 
-        #chat-form input::placeholder {
-            color: #9fb5d7;
-        }
+#chat-form input::placeholder {
+    color: #9fb5d7;
+}
 
-    #chat-form button {
-        padding: 0.6rem 1.2rem;
-        background: linear-gradient(135deg, #00aaff, #00d4ff);
-        border: none;
-        color: #fff;
-        border-radius: 999px;
-        cursor: pointer;
-        font-weight: 600;
-        transition: background 0.25s, transform 0.15s;
-    }
+#chat-form button {
+    padding: 0.6rem 1.2rem;
+    background: linear-gradient(135deg, #00aaff, #00d4ff);
+    border: none;
+    color: #fff;
+    border-radius: 999px;
+    cursor: pointer;
+    font-weight: 600;
+    transition: background 0.25s, transform 0.15s;
+}
 
-        #chat-form button:hover {
-            background: linear-gradient(135deg, #0090e0, #00c0f5);
-            transform: translateY(-1px);
-        }
+#chat-form button:hover {
+    background: linear-gradient(135deg, #0090e0, #00c0f5);
+    transform: translateY(-1px);
+}
 
-/* -----------------------------
-   Responsive
-------------------------------*/
 @media (max-width: 800px) {
     .weather-cards {
         flex-direction: column;
     }
 }
-<<<<<<< HEAD
-
-.home-button:hover {
-    background-color: var(--brand-dark);
-    transform: scale(1.05);
-}
-
-.home-button:active {
-    transform: scale(0.98);
-}
-
-/* ========================= */
-/* Search row adjustments */
-#location-form input[type="search"],
-#location-form button,
-#location-form .icon-btn {
-    height: 40px;
-}
-
-#location-form input[type="search"] {
-    padding: 0 .75rem;
-    line-height: 40px;
-}
-
-#location-form button {
-    line-height: 40px;
-    padding: 0 .9rem;
-    border-radius: 10px;
-}
-
-/* Icon-only geo button */
-.icon-btn {
-    display: inline-grid;
-    place-items: center;
-    width: 40px;
-    height: 40px;
-    border: 0;
-    border-radius: 10px;
-    background: #0bb2ff;
-    color: #ffffff;
-    cursor: pointer;
-    box-shadow: 0 1px 2px rgba(0,0,0,.08);
-    transition: transform .06s ease, filter .2s ease;
-}
-
-.icon-btn:hover {
-    filter: brightness(1.05);
-}
-
-.icon-btn:active {
-    transform: translateY(1px);
-}
-
-.icon-btn:focus {
-    outline: 2px solid #fff;
-    outline-offset: 2px;
-}
-
-/* Background image for current weather */
-#current {
-    background-image: url("https://platform.vox.com/wp-content/uploads/sites/2/chorus/uploads/chorus_asset/file/15788040/20150428-cloud-computing.0.1489222360.jpg?quality=90&strip=all&crop=0,5.5555555555556,100,88.888888888889");
-    background-size: cover;
-    background-position: center;
-    color: #0a0232;
-}
-=======
->>>>>>> 66a9695096f0d6b14dcfc737236b4fac8f25b65b
