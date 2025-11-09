@@ -44,6 +44,28 @@
     </div>
   </main>
 
+  <script>
+  // =========================
+  // Persist accessibility settings on Home Page
+  // =========================
+  document.addEventListener('DOMContentLoaded', () => {
+    // Dark mode
+    if (localStorage.getItem('darkMode') === 'true') {
+      document.body.classList.add('dark-mode');
+    }
+
+    // Big text
+    if (localStorage.getItem('bigText') === 'true') {
+      document.documentElement.style.fontSize = '18px';
+    }
+
+    // High contrast
+    if (localStorage.getItem('highContrast') === 'true') {
+      document.body.style.filter = 'contrast(1.2)';
+    }
+  });
+  </script>
+
   <script src="voice-control.js"></script>
 </body>
 </html>
