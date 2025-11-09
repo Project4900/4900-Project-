@@ -12,13 +12,27 @@ window.addEventListener('DOMContentLoaded', () => {
     let voiceEnabled = false;
 
     // ----------------------------
-    // Speak text
+    // Get user voice settings
+    // ----------------------------
+    function getUserVoiceSettings() {
+        const name = localStorage.getItem('preferredVoice');
+        const rate = parseFloat(localStorage.getItem('speechRate') || 1);
+        const pitch = parseFloat(localStorage.getItem('speechPitch') || 1);
+        let voice = synth.getVoices().find(v => v.name === name) || synth.getVoices()[0];
+        return { voice, rate, pitch };
+    }
+
+    // ----------------------------
+    // Speak text using user preferences
     // ----------------------------
     function speak(text) {
         if(!voiceEnabled) return;
         if (synth.speaking) synth.cancel();
         const utter = new SpeechSynthesisUtterance(text);
-        utter.rate = 0.85; // slower, natural
+        const { voice, rate, pitch } = getUserVoiceSettings();
+        utter.voice = voice;
+        utter.rate = rate;
+        utter.pitch = pitch;
         synth.speak(utter);
     }
 
@@ -33,13 +47,7 @@ window.addEventListener('DOMContentLoaded', () => {
             "Option 2: Settings.",
             "Option 9: Exit."
         ];
-
-        lines.forEach(line => {
-            const utter = new SpeechSynthesisUtterance(line);
-            utter.rate = 0.85;
-            synth.speak(utter);
-        });
-
+        lines.forEach(line => speak(line));
         if (voiceStatus) voiceStatus.textContent = "Awaiting voice command...";
     }
 
@@ -51,14 +59,12 @@ window.addEventListener('DOMContentLoaded', () => {
             voiceStatus.textContent = "Voice commands not supported in this browser.";
             return;
         }
-
         const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
         recognition = new SpeechRecognition();
         recognition.lang = 'en-US';
         recognition.interimResults = false;
         recognition.maxAlternatives = 1;
         recognition.continuous = true;
-
         recognition.start();
 
         recognition.onresult = (event) => {
@@ -112,3 +118,4 @@ window.addEventListener('DOMContentLoaded', () => {
         startVoiceBtn.style.display = "none";
     });
 });
+
