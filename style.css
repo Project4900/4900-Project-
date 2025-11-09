@@ -303,8 +303,25 @@ body.dark-mode {
 
 /* Background image for current weather */
 #current {
-    background-image: url("https://platform.vox.com/wp-content/uploads/sites/2/chorus/uploads/chorus_asset/file/15788040/20150428-cloud-computing.0.1489222360.jpg?quality=90&strip=all&crop=0,5.5555555555556,100,88.888888888889");
+    /* background-image: url("https://platform.vox.com/wp-content/uploads/sites/2/chorus/uploads/chorus_asset/file/15788040/20150428-cloud-computing.0.1489222360.jpg?quality=90&strip=all&crop=0,5.5555555555556,100,88.888888888889"); */
     background-size: cover;
     background-position: center;
     color: #0a0232;
 }
+
+html, body {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  background-image: url("https://platform.vox.com/wp-content/uploads/sites/2/chorus/uploads/chorus_asset/file/15788040/20150428-cloud-computing.0.1489222360.jpg?quality=90&strip=all&crop=0,5.5555555555556,100,88.888888888889");
+  background-size: cover;       /* make it fill the whole page */
+  background-position: center;  /* keep image centered */
+  background-repeat: no-repeat; /* prevent tiling */
+  background-attachment: fixed; /* keep it still while scrolling */
+  color: #0a0232;               /* text color so it’s readable */
+}
+
+
