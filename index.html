@@ -46,9 +46,12 @@
 
   <script>
   // =========================
-  // Persist accessibility settings on Home Page
+  // Persist accessibility settings & auto-voice greeting
   // =========================
   document.addEventListener('DOMContentLoaded', () => {
+    const startVoiceBtn = document.getElementById('start-voice-btn');
+    const voiceStatus = document.getElementById('voice-status');
+
     // Dark mode
     if (localStorage.getItem('darkMode') === 'true') {
       document.body.classList.add('dark-mode');
@@ -62,6 +65,27 @@
     // High contrast
     if (localStorage.getItem('highContrast') === 'true') {
       document.body.style.filter = 'contrast(1.2)';
+    }
+
+    // Auto voice greeting if voice enabled
+    if (localStorage.getItem('voiceEnabled') === 'true' && 'speechSynthesis' in window) {
+      startVoiceBtn.style.display = 'none'; // Hide button
+
+      const synth = window.speechSynthesis;
+      const voices = synth.getVoices();
+      const preferredName = localStorage.getItem('preferredVoice');
+      const voice = voices.find(v => v.name === preferredName) || voices[0];
+      const rate = parseFloat(localStorage.getItem('speechRate')) || 1;
+      const pitch = parseFloat(localStorage.getItem('speechPitch')) || 1;
+
+      if (voice) {
+        const utter = new SpeechSynthesisUtterance("Welcome back to WeatherEase! You can choose Weather, Settings, or Exit.");
+        utter.voice = voice;
+        utter.rate = rate;
+        utter.pitch = pitch;
+        synth.speak(utter);
+        if (voiceStatus) voiceStatus.textContent = "Voice commands active. Awaiting your instruction...";
+      }
     }
   });
   </script>
