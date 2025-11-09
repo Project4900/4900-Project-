@@ -362,3 +362,16 @@ body.dark-mode nav ul li button:hover {
         flex-direction: column;
     }
 }
+/* -----------------------------
+   Current weather condition emoji
+------------------------------*/
+#condition-emoji {
+    font-size: 4.5rem;          /* make emoji bigger */
+    display: flex;
+    justify-content: center;   /* center horizontally */
+    align-items: center;       /* center vertically */
+    margin-top: 1rem;          /* space from text above */
+    text-align: center;
+    height: 3.5rem;            /* space reserved for emoji */
+    pointer-events: none;      /* non-interactive */
+}

@@ -69,6 +69,20 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // ----------------------------
+    // Emoji helper
+    // ----------------------------
+    function getConditionEmoji(desc) {
+        if (!desc) return '';
+        desc = desc.toLowerCase();
+        if (desc.includes('cloud')) return '☁️';
+        if (desc.includes('rain')) return '🌧️';
+        if (desc.includes('snow')) return '❄️';
+        if (desc.includes('sun') || desc.includes('clear')) return '☀️';
+        if (desc.includes('mist') || desc.includes('fog') || desc.includes('haze')) return '🌫️';
+        return '❓';
+    }
+
+    // ----------------------------
     // Fetch current weather + 5-day forecast
     // ----------------------------
     async function fetchWeather(lat, lon, units = getUnits()) {
@@ -115,6 +129,12 @@ document.addEventListener('DOMContentLoaded', () => {
             setField('current condition', current?.weather?.[0]?.description ?? '—');
             setField('humidity', current?.main?.humidity !== undefined ? `${current.main.humidity}%` : '—');
             setField('wind', current?.wind?.speed !== undefined ? `${Math.round(current.wind.speed)} ${windUnit}` : '—');
+
+            // Update condition emoji
+            const emojiEl = document.getElementById('condition-emoji');
+            if (emojiEl) {
+                emojiEl.textContent = getConditionEmoji(current?.weather?.[0]?.description);
+            }
 
             // Update forecast
             renderForecast(forecast, units);
@@ -227,21 +247,17 @@ document.addEventListener('DOMContentLoaded', () => {
     const chatInput = document.getElementById('chat-input');
     const chatLog = document.getElementById('chat-log');
 
-    // Only activate chatbot if its HTML exists
     if (chatForm && chatInput && chatLog) {
         chatForm.addEventListener('submit', async (e) => {
             e.preventDefault();
             const message = chatInput.value.trim();
             if (!message) return;
 
-            // Show user's message in chat window
             addChatMessage('user', message);
             chatInput.value = '';
 
             try {
-                // Send to AI backend route
                 const reply = await askWeatherAgent(message);
-                // Show AI reply
                 addChatMessage('bot', reply);
             } catch (err) {
                 console.error(err);
@@ -250,7 +266,6 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // Helper to visually add chat messages
     function addChatMessage(role, text) {
         const msg = document.createElement('div');
         msg.className = `chat-message ${role}`;
@@ -264,7 +279,6 @@ document.addEventListener('DOMContentLoaded', () => {
         chatLog.scrollTop = chatLog.scrollHeight;
     }
 
-    // Sends message to backend /api/chat route (to be implemented)
     async function askWeatherAgent(message) {
         const res = await fetch('/api/chat', {
             method: 'POST',
@@ -311,3 +325,4 @@ window.addEventListener('online', () => {
         window.speechSynthesis.speak(speech);
     }
 });
+
