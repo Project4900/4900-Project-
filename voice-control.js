@@ -16,10 +16,11 @@ window.addEventListener('DOMContentLoaded', () => {
     // Get user voice settings
     // ----------------------------
     function getUserVoiceSettings() {
-        const name = localStorage.getItem('voiceName');
+        const name = localStorage.getItem('voiceName'); // matches settings.js
         const rate = parseFloat(localStorage.getItem('speechRate') || 1);
         const pitch = parseFloat(localStorage.getItem('speechPitch') || 1);
-        let voice = synth.getVoices().find(v => v.name === name) || synth.getVoices()[0];
+        const voices = synth.getVoices();
+        let voice = voices.find(v => v.name === name) || voices[0];
         return { voice, rate, pitch };
     }
 
@@ -113,10 +114,22 @@ window.addEventListener('DOMContentLoaded', () => {
 
     if(startVoiceBtn) startVoiceBtn.addEventListener('click', () => {
         voiceEnabled = true;
+        localStorage.setItem('voiceEnabled', true); // save to storage
         speak("Voice features enabled!");
         startVoiceRecognition();
         greetUser();
         startVoiceBtn.style.display = "none";
     });
+
+    // ----------------------------
+    // Auto-start if voice enabled
+    // ----------------------------
+    if(localStorage.getItem('voiceEnabled') === 'true') {
+        voiceEnabled = true;
+        speak("Voice features enabled!");
+        startVoiceRecognition();
+        greetUser();
+        if(startVoiceBtn) startVoiceBtn.style.display = "none";
+    }
 });
 
