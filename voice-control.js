@@ -1,6 +1,7 @@
 // =========================
 // Home Page Voice + Button Navigation
 // =========================
+
 window.addEventListener('DOMContentLoaded', () => {
     const weatherBtn = document.getElementById('weather-btn');
     const settingsBtn = document.getElementById('settings-btn');
@@ -9,13 +10,13 @@ window.addEventListener('DOMContentLoaded', () => {
     const voiceStatus = document.getElementById('voice-status');
     const synth = window.speechSynthesis;
     let recognition;
-    let voiceEnabled = localStorage.getItem('voiceEnabled') === 'true';
+    let voiceEnabled = false;
 
     // ----------------------------
     // Get user voice settings
     // ----------------------------
     function getUserVoiceSettings() {
-        const name = localStorage.getItem('preferredVoice');
+        const name = localStorage.getItem('voiceName');
         const rate = parseFloat(localStorage.getItem('speechRate') || 1);
         const pitch = parseFloat(localStorage.getItem('speechPitch') || 1);
         let voice = synth.getVoices().find(v => v.name === name) || synth.getVoices()[0];
@@ -26,7 +27,7 @@ window.addEventListener('DOMContentLoaded', () => {
     // Speak text using user preferences
     // ----------------------------
     function speak(text) {
-        if (!voiceEnabled) return;
+        if(!voiceEnabled) return;
         if (synth.speaking) synth.cancel();
         const utter = new SpeechSynthesisUtterance(text);
         const { voice, rate, pitch } = getUserVoiceSettings();
@@ -40,7 +41,6 @@ window.addEventListener('DOMContentLoaded', () => {
     // Greet user
     // ----------------------------
     function greetUser() {
-        if (!voiceEnabled) return;
         const lines = [
             "Welcome to WeatherEase!",
             "You can choose from the following options.",
@@ -57,7 +57,7 @@ window.addEventListener('DOMContentLoaded', () => {
     // ----------------------------
     function startVoiceRecognition() {
         if (!('webkitSpeechRecognition' in window || 'SpeechRecognition' in window)) {
-            if (voiceStatus) voiceStatus.textContent = "Voice commands not supported in this browser.";
+            if(voiceStatus) voiceStatus.textContent = "Voice commands not supported in this browser.";
             return;
         }
         const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
@@ -69,12 +69,12 @@ window.addEventListener('DOMContentLoaded', () => {
         recognition.start();
 
         recognition.onresult = (event) => {
-            const command = event.results[event.results.length - 1][0].transcript.trim().toLowerCase();
+            const command = event.results[event.results.length-1][0].transcript.trim().toLowerCase();
             handleVoiceCommand(command);
         };
 
         recognition.onerror = (event) => {
-            if (voiceStatus) voiceStatus.textContent = `Error: ${event.error}`;
+            if(voiceStatus) voiceStatus.textContent = `Error: ${event.error}`;
         };
 
         recognition.onend = () => {
@@ -89,15 +89,15 @@ window.addEventListener('DOMContentLoaded', () => {
         switch(cmd) {
             case '1': case 'one': case 'get weather': case 'weather':
                 speak("Opening Weather page");
-                setTimeout(() => window.location.href = "weather.html", 500);
+                window.location.href = "weather.html";
                 break;
             case '2': case 'two': case 'settings':
                 speak("Opening Settings page");
-                setTimeout(() => window.location.href = "settings.html", 500);
+                window.location.href = "settings.html";
                 break;
             case '9': case 'nine': case 'exit':
                 speak("Exiting app");
-                setTimeout(() => window.location.href = "exit.html", 500);
+                window.location.href = "exit.html";
                 break;
             default:
                 speak("Command not recognized, please try again.");
@@ -107,26 +107,16 @@ window.addEventListener('DOMContentLoaded', () => {
     // ----------------------------
     // Button click handlers
     // ----------------------------
-    weatherBtn?.addEventListener('click', () => window.location.href = "weather.html");
-    settingsBtn?.addEventListener('click', () => window.location.href = "settings.html");
-    exitBtn?.addEventListener('click', () => window.location.href = "exit.html");
+    if(weatherBtn) weatherBtn.addEventListener('click', () => window.location.href = "weather.html");
+    if(settingsBtn) settingsBtn.addEventListener('click', () => window.location.href = "settings.html");
+    if(exitBtn) exitBtn.addEventListener('click', () => window.location.href = "exit.html");
 
-    startVoiceBtn?.addEventListener('click', () => {
+    if(startVoiceBtn) startVoiceBtn.addEventListener('click', () => {
         voiceEnabled = true;
-        localStorage.setItem('voiceEnabled', true);
         speak("Voice features enabled!");
         startVoiceRecognition();
         greetUser();
         startVoiceBtn.style.display = "none";
     });
-
-    // ----------------------------
-    // Auto-start voice if enabled
-    // ----------------------------
-    if (voiceEnabled) {
-        startVoiceBtn?.style.display = "none";
-        startVoiceRecognition();
-        greetUser();
-    }
 });
 
