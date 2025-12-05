@@ -153,8 +153,9 @@ window.addEventListener('DOMContentLoaded', () => {
     // ----------------------------
     if (localStorage.getItem('voiceEnabled') === 'true') {
         voiceEnabled = true;
-        startVoiceRecognition();
-        greetUser();
+        if (voiceStatus) voiceStatus.textContent = "Voice features enabled. Click 'Start Voice' to speak.";
+        greetUser(); // optional
+    // DO NOT call startVoiceRecognition() automatically
     }
 });
 

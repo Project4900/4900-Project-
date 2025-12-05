@@ -186,11 +186,10 @@ enableVoiceBtn?.addEventListener('click', () => {
     }
 });
 
-// ----------------------------
-// Auto-start if voice enabled
-// ----------------------------
+// Auto-start visual feedback only
 if (voiceEnabled) {
-    greetUser();
-    startRecognition();
+    if (currentStatus) currentStatus.textContent = "Voice commands enabled. Click 'Enable Voice' to start speaking.";
+    greetUser(); // optional, can still speak a welcome message without triggering mic
+    // DO NOT call startRecognition() automatically
 }
 
