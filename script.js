@@ -326,3 +326,51 @@ window.addEventListener('online', () => {
     }
 });
 
+// ----------------------------
+// Online/offline status indicator in header (text + dot)
+// ----------------------------
+document.addEventListener('DOMContentLoaded', () => {
+    const header = document.querySelector('header');
+    if (!header) return;
+
+    // Create container for status
+    const statusContainer = document.createElement('div');
+    statusContainer.id = 'online-status';
+    statusContainer.style.display = 'flex';
+    statusContainer.style.alignItems = 'center';
+    statusContainer.style.position = 'absolute';
+    statusContainer.style.top = '0.75rem';
+    statusContainer.style.right = '1.5rem';
+    statusContainer.style.fontSize = '0.9rem';
+    statusContainer.style.fontWeight = '600';
+    statusContainer.style.color = '#fff';
+    header.appendChild(statusContainer);
+
+    // Create colored dot
+    const statusDot = document.createElement('span');
+    statusDot.style.display = 'inline-block';
+    statusDot.style.width = '12px';
+    statusDot.style.height = '12px';
+    statusDot.style.borderRadius = '50%';
+    statusDot.style.marginRight = '0.5rem';
+    statusContainer.appendChild(statusDot);
+
+    // Create text node
+    const statusText = document.createElement('span');
+    statusContainer.appendChild(statusText);
+
+    // Update function
+    function updateStatus() {
+        if (navigator.onLine) {
+            statusDot.style.backgroundColor = '#4caf50'; // green
+            statusText.textContent = 'Online';
+        } else {
+            statusDot.style.backgroundColor = '#ff5555'; // red
+            statusText.textContent = 'You’re offline — showing saved data';
+        }
+    }
+
+    updateStatus(); // initialize
+    window.addEventListener('online', updateStatus);
+    window.addEventListener('offline', updateStatus);
+});
