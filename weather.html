@@ -83,17 +83,19 @@
     </section>
   </div>
 
-  <!-- Bottom Card: Chat / AI Assistant -->
-  <section class="card chat-card" aria-label="AI Weather Assistant">
-    <h2>Ask a question</h2>
-    <div id="chat-log" class="chat-log"></div>
+<!-- Bottom Card: Simple Weather Chatbot -->
+<section class="card chat-card" aria-label="Weather Assistant">
+  <h2>Ask a weather question</h2>
+  <div id="chat-log" class="chat-log"></div>
 
-    <form id="chat-form">
-      <input id="chat-input" type="text" placeholder="Ask me about the weather..." autocomplete="off">
-      <button type="submit">Send</button>
-    </form>
-  </section>
-</main>
+  <form id="chat-form">
+    <input 
+      type="text" 
+      id="chat-input" 
+      placeholder="  I can answer current temperature, humidity, wind, and feels-like.">
+    <button type="submit">Send</button>
+  </form>
+</section>
 
 <!-- Scripts -->
 <script src="voice-control-weather.js"></script>

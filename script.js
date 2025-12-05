@@ -240,59 +240,68 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
-    // ----------------------------
-    // 🌤️ Chatbot / AI Weather Assistant
-    // ----------------------------
-    const chatForm = document.getElementById('chat-form');
-    const chatInput = document.getElementById('chat-input');
-    const chatLog = document.getElementById('chat-log');
+// ----------------------------
+// 🌤️ Simple Weather Chatbot
+// ----------------------------
+const chatForm = document.getElementById('chat-form');
+const chatInput = document.getElementById('chat-input');
+const chatLog = document.getElementById('chat-log');
 
-    if (chatForm && chatInput && chatLog) {
-        chatForm.addEventListener('submit', async (e) => {
-            e.preventDefault();
-            const message = chatInput.value.trim();
-            if (!message) return;
+if (chatForm && chatInput && chatLog) {
+    chatForm.addEventListener('submit', (e) => {
+        e.preventDefault();
+        const message = chatInput.value.trim().toLowerCase();
+        if (!message) return;
 
-            addChatMessage('user', message);
-            chatInput.value = '';
+        addChatMessage('user', chatInput.value);
+        chatInput.value = '';
 
-            try {
-                const reply = await askWeatherAgent(message);
-                addChatMessage('bot', reply);
-            } catch (err) {
-                console.error(err);
-                addChatMessage('bot', 'Sorry, I could not answer that right now.');
-            }
-        });
+        const reply = getWeatherReply(message);
+        addChatMessage('bot', reply);
+    });
+}
+
+// ----------------------------
+// Display messages in chat
+// ----------------------------
+function addChatMessage(role, text) {
+    const msg = document.createElement('div');
+    msg.className = `chat-message ${role}`;
+    msg.textContent = text;
+    msg.style.margin = '.3rem 0';
+    msg.style.padding = '.4rem .6rem';
+    msg.style.borderRadius = '6px';
+    msg.style.alignSelf = role === 'user' ? 'flex-end' : 'flex-start';
+    msg.style.background = role === 'user' ? '#e1f5fe' : '#f1f1f1';
+    chatLog.appendChild(msg);
+    chatLog.scrollTop = chatLog.scrollHeight;
+}
+
+// ----------------------------
+// Weather response logic
+// ----------------------------
+function getWeatherReply(message) {
+    const temp = document.querySelector('[data-field="temperature"]')?.textContent || 'unknown';
+    const feels = document.querySelector('[data-field="feels like"]')?.textContent || 'unknown';
+    const condition = document.querySelector('[data-field="current condition"]')?.textContent || 'unknown';
+    const humidity = document.querySelector('[data-field="humidity"]')?.textContent || 'unknown';
+    const wind = document.querySelector('[data-field="wind"]')?.textContent || 'unknown';
+    const place = document.querySelector('[data-field="place"]')?.textContent || 'your current location';
+
+    // Specific fields
+    if (message.includes('temperature')) return `The current temperature is ${temp}.`;
+    if (message.includes('feels like')) return `The weather in ${place} feels like ${feels}.`;
+    if (message.includes('condition') || message.includes('weather condition')) return `Current weather is ${condition}.`;
+    if (message.includes('humidity')) return `Humidity in ${place} is ${humidity}.`;
+    if (message.includes('wind')) return `The wind speed is ${wind}.`;
+    if (message.includes('current weather') || message.includes('weather')) {
+        return `Right now in ${place}, it's ${condition} with a temperature of ${temp} (feels like ${feels}). Humidity is ${humidity}, and wind speed is ${wind}.`;
     }
 
-    function addChatMessage(role, text) {
-        const msg = document.createElement('div');
-        msg.className = `chat-message ${role}`;
-        msg.textContent = text;
-        msg.style.margin = '.3rem 0';
-        msg.style.padding = '.4rem .6rem';
-        msg.style.borderRadius = '6px';
-        msg.style.alignSelf = role === 'user' ? 'flex-end' : 'flex-start';
-        msg.style.background = role === 'user' ? '#e1f5fe' : '#f1f1f1';
-        chatLog.appendChild(msg);
-        chatLog.scrollTop = chatLog.scrollHeight;
-    }
+    // Default fallback
+    return "I can answer questions about the current weather in your set location only. Try asking about temperature, feels like, condition, humidity, or wind.";
+}
 
-    async function askWeatherAgent(message) {
-        const res = await fetch('/api/chat', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ message }),
-        });
-
-        if (!res.ok) {
-            throw new Error('Chat API failed');
-        }
-
-        const data = await res.json();
-        return data.reply || 'No reply from AI.';
-    }
 
     // ----------------------------
 // Text-to-Speech helper (respects stored voice settings)
