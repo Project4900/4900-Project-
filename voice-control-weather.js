@@ -115,14 +115,14 @@ function handleCommand(cmd) {
         case '3': case 'three': case 'condition': case 'weather':
             speakField('current condition');
             break;
-        case '4': case 'four': case 'forecast': case 'five day forecast':
-            speakForecast();
-            break;
-        case '5': case 'five': case 'humidity':
+        case '4': case 'four': case 'humidity': 
             speakField('humidity');
             break;
-        case '6': case 'six': case 'wind':
+        case '5': case 'five': case 'wind':
             speakField('wind');
+            break;
+        case '6': case 'six': case 'forecast': case 'five day forecast':
+            speakForecast();
             break;
         case '7': case 'seven': case 'home': case 'return home':
             speak("Returning home");

@@ -294,6 +294,69 @@ document.addEventListener('DOMContentLoaded', () => {
         return data.reply || 'No reply from AI.';
     }
 
+    // ----------------------------
+// Text-to-Speech helper (respects stored voice settings)
+// ----------------------------
+function speakMessage(message) {
+    if (!window.speechSynthesis || !localStorage.getItem('voiceEnabled') || localStorage.getItem('voiceEnabled') !== 'true') return;
+
+    const utter = new SpeechSynthesisUtterance(message);
+    const voiceName = localStorage.getItem('voiceName');
+    if (voiceName) {
+        const selectedVoice = speechSynthesis.getVoices().find(v => v.name === voiceName);
+        if (selectedVoice) utter.voice = selectedVoice;
+    }
+    utter.rate = parseFloat(localStorage.getItem('speechRate')) || 1;
+    utter.pitch = parseFloat(localStorage.getItem('speechPitch')) || 1;
+    speechSynthesis.speak(utter);
+}
+
+// ----------------------------
+// Replace offline/online alerts with TTS + visual
+// ----------------------------
+window.addEventListener('offline', () => {
+    const alertEl = document.getElementById('current-status') || document.getElementById('voice-status');
+    if (alertEl) alertEl.textContent = '⚠️ You are offline — showing cached data.';
+    speakMessage('You are offline — showing cached data.');
+});
+
+window.addEventListener('online', () => {
+    const alertEl = document.getElementById('current-status') || document.getElementById('voice-status');
+    if (alertEl) alertEl.textContent = '✅ Back online.';
+    speakMessage('You are back online.');
+});
+
+// ----------------------------
+// Make sliders accessible for ARIA
+// ----------------------------
+const speechRate = document.getElementById('voice-rate');
+const speechPitch = document.getElementById('voice-pitch');
+const rateDisplay = document.getElementById('rate-display');
+const pitchDisplay = document.getElementById('pitch-display');
+
+if (speechRate) {
+    speechRate.setAttribute('role', 'slider');
+    speechRate.setAttribute('aria-valuemin', speechRate.min);
+    speechRate.setAttribute('aria-valuemax', speechRate.max);
+    speechRate.setAttribute('aria-valuenow', speechRate.value);
+    speechRate.addEventListener('input', () => {
+        rateDisplay.textContent = speechRate.value;
+        speechRate.setAttribute('aria-valuenow', speechRate.value);
+    });
+}
+
+if (speechPitch) {
+    speechPitch.setAttribute('role', 'slider');
+    speechPitch.setAttribute('aria-valuemin', speechPitch.min);
+    speechPitch.setAttribute('aria-valuemax', speechPitch.max);
+    speechPitch.setAttribute('aria-valuenow', speechPitch.value);
+    speechPitch.addEventListener('input', () => {
+        pitchDisplay.textContent = speechPitch.value;
+        speechPitch.setAttribute('aria-valuenow', speechPitch.value);
+    });
+}
+
+
 }); // END of DOMContentLoaded
 
 // ----------------------------
