@@ -72,13 +72,40 @@
         <button id="weather-btn" class="home-button">🌤️ Weather</button>
         <button id="settings-btn" class="home-button">⚙️ Settings</button>
         <button id="exit-btn" class="home-button">❌ Exit</button>
+        <button id="install-btn" class="home-button" >⬇️ Install App</button>
       </div>
 
       <!-- Always visible -->
       <button id="start-voice-btn">🎤 Enable Voice Commands</button>
       <p id="voice-status"></p>
+      <!-- Install button -->
     </div>
   </main>
 </body>
+<script>
+let deferredPrompt;
+const installBtn = document.getElementById('install-btn');
+
+window.addEventListener('beforeinstallprompt', (e) => {
+  // Prevent automatic prompt
+  e.preventDefault();
+  deferredPrompt = e;
+  installBtn.style.display = 'inline-flex'; // show button
+});
+
+installBtn.addEventListener('click', async () => {
+  if (!deferredPrompt) return;
+  deferredPrompt.prompt();
+  const { outcome } = await deferredPrompt.userChoice;
+  if (outcome === 'accepted') {
+    console.log('User accepted the install prompt');
+  } else {
+    console.log('User dismissed the install prompt');
+  }
+  deferredPrompt = null;
+  installBtn.style.display = 'none';
+});
+</script>
+
 </html>
 
